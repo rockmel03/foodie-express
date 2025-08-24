@@ -9,6 +9,11 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      unique: true,
+      required: true,
+    },
     email: {
       type: String,
       unique: true,
@@ -27,6 +32,7 @@ const userSchema = new Schema(
     // Basic profile information
     phoneNumber: {
       type: String,
+      match: [/^\+?[1-9]\d{1,14}$/, "Invalid phone number"],
     },
     // Account status
     isVerified: {
