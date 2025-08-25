@@ -31,4 +31,12 @@ export default class ApiError extends Error {
   static notFoundError(resource = "Resource") {
     return new ApiError(404, `${resource} not found`, [], "not_found_error");
   }
+
+  static serverError(message = "Server Error") {
+    return new ApiError(500, message, [], "server_error");
+  }
+
+  static badRequestError(message = "Bad Request") {
+    return new ApiError(400, message, [], "bad_request_error");
+  }
 }
