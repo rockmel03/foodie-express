@@ -17,11 +17,13 @@ import healthCheckRouter from "./routes/healthCheck.routes.js";
 import userRouter from "./routes/user.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import foodRouter from "./routes/food.routes.js";
+import cartRouter from "./routes/cart.routes.js";
 
 app.use("/api/v1", healthCheckRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/foods", foodRouter);
+app.use("/api/v1/carts", cartRouter);
 
 // global error handler
 app.use(errorHandler);
