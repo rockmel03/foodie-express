@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import corsOptions from "./config/corsOptions.js";
 import errorHandler from "./utils/errorHandler.js";
+import morgan from "morgan";
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(cors(corsOptions));
 app.use(cookieParser());
+app.use(morgan("dev"));
 
 // routes import
 import healthCheckRouter from "./routes/healthCheck.routes.js";
