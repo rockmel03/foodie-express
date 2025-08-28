@@ -25,7 +25,7 @@ export const register = asyncHandler(async (req, res) => {
 
   return res
     .status(201)
-    .cookies("token", refreshToken, cookieOptions)
+    .cookie("token", refreshToken, cookieOptions)
     .json(
       ApiResponse.success(
         { user, accessToken, refreshToken },
@@ -52,7 +52,7 @@ export const login = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookies("token", refreshToken, cookieOptions)
+    .cookie("token", refreshToken, cookieOptions)
     .json(
       ApiResponse.success(
         { user, accessToken, refreshToken },
@@ -73,7 +73,7 @@ export const refreshAuthToken = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookies("token", newRefreshToken, cookieOptions)
+    .cookie("token", newRefreshToken, cookieOptions)
     .json(
       ApiResponse.success(
         { accessToken, refreshToken: newRefreshToken },

@@ -24,10 +24,10 @@ const Navbar = () => {
       <nav className="w-full py-5 flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-lg">H</span>
+            <span className="text-white font-bold text-lg">F</span>
           </div>
           <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-            Hot Pot
+            Foodie Express
           </span>
         </div>
 
@@ -43,9 +43,11 @@ const Navbar = () => {
             </Link>
           ))}
 
-          <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-            Sign In
-          </Button>
+          <Link to="/login">
+            <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+              Sign In
+            </Button>
+          </Link>
         </div>
 
         <Button variant="ghost" size="sm" className="md:hidden">

@@ -32,7 +32,9 @@ export const registerUser = async (user) => {
 export const loginUser = async (userDetails) => {
   const { email, username, password } = userDetails;
 
-  const user = await User.findOne({ $or: [{ email }, { username }] });
+  const user = await User.findOne({ $or: [{ email }, { username }] }).select(
+    "+password"
+  );
   if (!user) {
     throw ApiError.notFoundError("User");
   }

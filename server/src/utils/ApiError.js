@@ -2,14 +2,14 @@ export default class ApiError extends Error {
   constructor(
     statusCode = 500,
     message = "Someting went wrong",
-    error = [],
+    errors = [],
     type = "api_error",
     stack
   ) {
     super(message);
     this.statusCode = statusCode;
     this.status = statusCode < 400;
-    this.error = error;
+    this.errors = errors;
     this.type = type;
 
     if (stack) {
@@ -20,8 +20,8 @@ export default class ApiError extends Error {
   }
 
   // Static methods for specific error types
-  static validationError(errors) {
-    return new ApiError(400, "Validation Error", errors, "validation_error");
+  static validationError(message = "Validation Error", errors) {
+    return new ApiError(400, message, errors, "validation_error");
   }
 
   static authError(message = "Authentication Error") {
