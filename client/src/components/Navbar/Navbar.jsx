@@ -1,24 +1,29 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
-import Container from "./Container";
+import Container from "../Container";
 import { Link } from "react-router";
+import { useAuth } from "../../features/auth/authSlice";
+import { NavDropDown } from "./NavDropDown";
+
+const navlinks = [
+  {
+    name: "Menu",
+    path: "/",
+  },
+  {
+    name: "About",
+    path: "/about",
+  },
+  {
+    name: "Contact",
+    path: "/contact",
+  },
+];
 
 const Navbar = () => {
-  const navlinks = [
-    {
-      name: "Menu",
-      path: "/",
-    },
-    {
-      name: "About",
-      path: "/about",
-    },
-    {
-      name: "Contact",
-      path: "/contact",
-    },
-  ];
+  const { isAuthenticated } = useAuth();
+
   return (
     <Container>
       <nav className="w-full py-5 flex items-center justify-between">
@@ -43,11 +48,15 @@ const Navbar = () => {
             </Link>
           ))}
 
-          <Link to="/login">
-            <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
-              Sign In
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <NavDropDown />
+          ) : (
+            <Link to="/login">
+              <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
 
         <Button variant="ghost" size="sm" className="md:hidden">
