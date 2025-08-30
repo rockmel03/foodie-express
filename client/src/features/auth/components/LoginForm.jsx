@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,16 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Eye, EyeOff, User, Lock, LogIn } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../authThunks";
 import { toast } from "react-hot-toast";
+import useToggle from "../../../hooks/useToggle";
 
 const LoginForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useToggle("showPassword", false);
+  const [persist, setPersist] = useToggle("persist", false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
   const dispatch = useDispatch();
 
   const {
@@ -28,7 +31,7 @@ const LoginForm = () => {
 
   const onSubmit = async (data) => {
     // Simulate API call
-    console.log("Login data:", { ...data, rememberMe });
+    console.log("Login data:", { ...data, persist });
     const toastId = toast.loading("Logging in...");
     try {
       const response = await dispatch(
@@ -41,7 +44,8 @@ const LoginForm = () => {
       console.log(response);
       if (response.status) {
         toast.success("Login successful", { id: toastId });
-        navigate("/");
+        localStorage.setItem("isLoggedIn", true);
+        navigate(from, { replace: true });
       }
     } catch (error) {
       toast.error(error, { id: toastId });
@@ -151,15 +155,15 @@ const LoginForm = () => {
       <div className="flex items-center space-x-2">
         <Checkbox
           id="rememberMe"
-          checked={rememberMe}
-          onCheckedChange={setRememberMe}
+          checked={persist}
+          onCheckedChange={setPersist}
           className="border-gray-300"
         />
         <Label
           htmlFor="rememberMe"
           className="text-sm text-gray-600 cursor-pointer"
         >
-          Remember me for 30 days
+          Remember me
         </Label>
       </div>
 

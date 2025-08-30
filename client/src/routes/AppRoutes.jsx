@@ -7,33 +7,49 @@ import Cart from "../pages/Cart";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 
+import PersistLogin from "../features/auth/components/PersistLogin";
+import RequireAuth from "../features/auth/components/RequireAuth";
+
 const AppRoutes = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <AppLayout />,
+      element: <PersistLogin />,
       children: [
         {
-          path: "",
-          element: <Home />,
+          element: <AppLayout />,
+          children: [
+            {
+              path: "",
+              element: <Home />,
+            },
+            {
+              path: "about",
+              element: <About />,
+            },
+            // protected routes for user
+            {
+              element: <RequireAuth roles={["user"]} />,
+              children: [
+                {
+                  path: "cart",
+                  element: <Cart />,
+                },
+              ],
+            },
+          ],
+        },
+
+        // public routes
+        {
+          path: "login",
+          element: <Login />,
         },
         {
-          path: "about",
-          element: <About />,
-        },
-        {
-          path: "cart",
-          element: <Cart />,
+          path: "register",
+          element: <Register />,
         },
       ],
-    },
-    {
-      path: "login",
-      element: <Login />,
-    },
-    {
-      path: "register",
-      element: <Register />,
     },
   ]);
   return <RouterProvider router={router} />;

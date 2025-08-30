@@ -12,6 +12,7 @@ const useLogout = () => {
     const toastId = toast.loading("Logging out...");
     try {
       await dispatch(logoutUser()).unwrap();
+      localStorage.removeItem("isLoggedIn");
       navigate("/login");
 
       toast.success("Logout successful", { id: toastId });

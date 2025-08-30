@@ -1,20 +1,25 @@
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Eye, EyeOff, User, Mail, Lock } from "lucide-react";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import { registerUser } from "../authThunks";
 import { toast } from "react-hot-toast";
+import useToggle from "../../../hooks/useToggle";
 
 const RegisterForm = () => {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPassword, setShowPassword] = useToggle("showPassword", false);
+  const [showConfirmPassword, setShowConfirmPassword] = useToggle(
+    "showConfirmPassword",
+    false
+  );
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from || "/";
   const dispatch = useDispatch();
 
   const {
@@ -37,7 +42,8 @@ const RegisterForm = () => {
       console.log(response);
       if (response.status) {
         toast.success("Registration successful", { id: toastId });
-        navigate("/");
+        localStorage.setItem("isLoggedIn", true);
+        navigate(from, { replace: true });
       }
     } catch (error) {
       toast.error(error, { id: toastId });
