@@ -4,12 +4,7 @@ import z from "zod";
 import * as CartService from "../services/cart.service.js";
 
 export const addToCart = asyncHandler(async (req, res) => {
-  const cartSchema = z.object({
-    foodId: z.string(),
-    quantity: z.number(),
-  });
-
-  const { foodId, quantity } = cartSchema.parse(req.body);
+  const { foodId, quantity } = req.body;
 
   const cart = await CartService.addToCart(req.user._id, foodId, quantity);
   return res
@@ -18,12 +13,7 @@ export const addToCart = asyncHandler(async (req, res) => {
 });
 
 export const removeFromCart = asyncHandler(async (req, res) => {
-  const cartSchema = z.object({
-    foodId: z.string(),
-    quantity: z.number(),
-  });
-
-  const { foodId, quantity } = cartSchema.parse(req.body);
+  const { foodId, quantity } = req.body;
 
   const cart = await CartService.removeFromCart(req.user._id, foodId, quantity);
   return res

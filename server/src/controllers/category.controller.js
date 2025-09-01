@@ -1,16 +1,9 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import * as CategoryService from "../services/category.service.js";
-import z from "zod";
 
 export const createCategory = asyncHandler(async (req, res) => {
-  const categorySchema = z.object({
-    title: z.string().min(3).max(30),
-    description: z.string().optional(),
-  });
-
-  const { title, description } = categorySchema.parse(req.body);
-
+  const { title, description } = req.body;
   // todo: add image upload
 
   const category = await CategoryService.createCategory({ title, description });
@@ -36,12 +29,7 @@ export const getCategoryById = asyncHandler(async (req, res) => {
 });
 
 export const updateCategory = asyncHandler(async (req, res) => {
-  const categorySchema = z.object({
-    title: z.string().min(3).max(30),
-    description: z.string().optional(),
-  });
-
-  const { title, description } = categorySchema.parse(req.body);
+  const { title, description } = req.body;
 
   const category = await CategoryService.updateCategory(req.params.id, {
     title,

@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import ApiError from "../utils/ApiError.js";
+import jwt from "jsonwebtoken";
 
 const generateTokens = (user) => {
   try {
@@ -11,22 +12,25 @@ const generateTokens = (user) => {
   }
 };
 
-export const registerUser = async (user) => {
-  const { username, email } = user;
-
+export const registerUser = async ({ fullname, username, email, password }) => {
   const existingUser = await User.findOne({ $or: [{ email }, { username }] });
   if (existingUser) {
     throw ApiError.validationError("User already exists");
   }
 
-  const newUser = await User.create(user);
+  const newUser = await User.create({ fullname, username, email, password });
 
   const { accessToken, refreshToken } = generateTokens(newUser);
 
   newUser.refreshToken = refreshToken;
   await newUser.save();
 
-  return { newUser, accessToken, refreshToken };
+  // remove password and refreshToken from response
+  const userData = newUser.toObject();
+  delete userData.password;
+  delete userData.refreshToken;
+
+  return { user: userData, accessToken, refreshToken };
 };
 
 export const loginUser = async (userDetails) => {
@@ -49,7 +53,12 @@ export const loginUser = async (userDetails) => {
   user.refreshToken = refreshToken;
   await user.save();
 
-  return { user, accessToken, refreshToken };
+  // remove password and refreshToken from response
+  const userData = user.toObject();
+  delete userData.password;
+  delete userData.refreshToken;
+
+  return { user: userData, accessToken, refreshToken };
 };
 
 export const refreshToken = async (refreshToken) => {
@@ -66,7 +75,7 @@ export const refreshToken = async (refreshToken) => {
 
   const { accessToken, refreshToken: newRefreshToken } = generateTokens(user);
 
-  user.refreshToken = refreshToken;
+  user.refreshToken = newRefreshToken;
   await user.save();
 
   return { accessToken, refreshToken: newRefreshToken };
@@ -82,5 +91,10 @@ export const logoutUser = async (refreshToken) => {
   user.refreshToken = null;
   await user.save();
 
-  return { user };
+  // remove password and refreshToken from response
+  const userData = user.toObject();
+  delete userData.password;
+  delete userData.refreshToken;
+
+  return { user: userData };
 };

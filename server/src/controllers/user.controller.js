@@ -1,27 +1,12 @@
-import z from "zod";
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import * as userService from "../services/user.service.js";
 import { cookieOptions } from "../config/cookieOptions.js";
 
 export const register = asyncHandler(async (req, res) => {
-  const registerUserSchema = z.object({
-    fullname: z.string().min(3).max(30),
-    username: z.string().min(3).max(30),
-    email: z.string().email(),
-    password: z.string().min(6).max(30),
-  });
-
-  const { fullname, username, email, password } = registerUserSchema.parse(
+  const { user, accessToken, refreshToken } = await userService.registerUser(
     req.body
   );
-
-  const { user, accessToken, refreshToken } = await userService.registerUser({
-    fullname,
-    username,
-    email,
-    password,
-  });
 
   return res
     .status(201)
@@ -36,19 +21,9 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const login = asyncHandler(async (req, res) => {
-  const loginUserSchema = z.object({
-    email: z.string().email().optional(),
-    username: z.string().min(3).max(30).optional(),
-    password: z.string().min(6).max(30),
-  });
-
-  const { email, username, password } = loginUserSchema.parse(req.body);
-
-  const { user, accessToken, refreshToken } = await userService.loginUser({
-    email,
-    username,
-    password,
-  });
+  const { user, accessToken, refreshToken } = await userService.loginUser(
+    req.body
+  );
 
   return res
     .status(200)
@@ -63,13 +38,10 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const refreshAuthToken = asyncHandler(async (req, res) => {
-  const refreshTokenSchema = z.object({
-    refreshToken: z.string(),
-  });
+  const token = req.cookies?.token || req.body.refreshToken;
 
-  const { refreshToken: newRefreshToken } = await userService.refreshToken(
-    refreshTokenSchema.parse(req.body)
-  );
+  const { accessToken, refreshToken: newRefreshToken } =
+    await userService.refreshToken(token);
 
   return res
     .status(200)

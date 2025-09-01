@@ -1,20 +1,9 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/ApiResponse.js";
-import z from "zod";
 import * as FoodService from "../services/food.service.js";
 
 export const createFood = asyncHandler(async (req, res) => {
-  const foodSchema = z.object({
-    title: z.string().min(3).max(30),
-    description: z.string().optional(),
-    price: z.number(),
-    discount: z.number().optional(),
-    categoryId: z.string(),
-  });
-
-  const { title, description, price, discount, categoryId } = foodSchema.parse(
-    req.body
-  );
+  const { title, description, price, discount, categoryId } = req.body;
 
   const food = await FoodService.createFood({
     title,
@@ -52,17 +41,7 @@ export const getFoodById = asyncHandler(async (req, res) => {
 });
 
 export const updateFood = asyncHandler(async (req, res) => {
-  const foodSchema = z.object({
-    title: z.string().min(3).max(30),
-    description: z.string().optional(),
-    price: z.number(),
-    discount: z.number().optional(),
-    categoryId: z.string(),
-  });
-
-  const { title, description, price, discount, categoryId } = foodSchema.parse(
-    req.body
-  );
+  const { title, description, price, discount, categoryId } = req.body;
 
   const food = await FoodService.updateFood(req.params.id, {
     title,
