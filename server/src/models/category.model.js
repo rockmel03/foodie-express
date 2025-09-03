@@ -2,9 +2,18 @@ import mongoose, { Schema } from "mongoose";
 
 const categorySchema = new Schema(
   {
-    title: { type: String, required: true },
+    title: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      lowercase: true,
+    },
     description: String,
-    image: String,
+    image: {
+      url: String,
+      fileId: String,
+    },
   },
   { timestamps: true }
 );

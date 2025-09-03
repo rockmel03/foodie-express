@@ -1,12 +1,17 @@
 import imagekit from "../config/imagekit.js";
 import fs from "fs";
-import {v4 as uuid} from "uuid";
+import { v4 as uuid } from "uuid";
 
-export const uploadToImageKit = async (fileBuffer, fileName) => {
+export const uploadToImageKit = async (
+  fileBuffer,
+  fileName,
+  folder = "foodie"
+) => {
   try {
     const response = await imagekit.upload({
       file: fileBuffer,
       fileName,
+      folder,
     });
     return response;
   } catch (error) {
@@ -24,12 +29,16 @@ export const deleteFromImageKit = async (fileId) => {
   }
 };
 
-export const uploadImageToImageKit = async (file, fileName) => {
+export const uploadImageToImageKit = async (file, fileName, folder) => {
   try {
     const fileBuffer = fs.readFileSync(file.path);
-    if(!fileName) fileName = uuid();
+    if (!fileName) fileName = uuid();
 
-    const imageKitResponse = await uploadToImageKit(fileBuffer, fileName);
+    const imageKitResponse = await uploadToImageKit(
+      fileBuffer,
+      fileName,
+      folder
+    );
     if (!imageKitResponse) {
       throw new Error("Failed to upload image to ImageKit");
     }
@@ -38,16 +47,19 @@ export const uploadImageToImageKit = async (file, fileName) => {
 
     return imageKitResponse;
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };
 
 export const deleteImageFromImageKit = async (fileId) => {
   try {
-    return await deleteFromImageKit(fileId);
+    const response = await deleteFromImageKit(fileId);
+    if (!response) {
+      throw new Error("Failed to delete image from ImageKit");
+    }
+
+    return response;
   } catch (error) {
-    console.log(error);
     throw error;
   }
 };

@@ -9,6 +9,7 @@ import {
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import z from "zod";
 import { validate } from "../middlewares/validate.middleware.js";
+import upload, { handleMulterError } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
@@ -22,7 +23,7 @@ const createCategorySchemas = {
 
 const updateCategorySchemas = {
   body: z.object({
-    title: z.string().min(3).max(30),
+    title: z.string().min(3).max(30).optional(),
     description: z.string().optional(),
   }),
   params: z.object({
@@ -41,6 +42,7 @@ router
   .route("/")
   .post(
     authMiddleware(["admin"]),
+    [upload.single("image"), handleMulterError],
     validate(createCategorySchemas),
     createCategory
   )
@@ -49,8 +51,9 @@ router
 router
   .route("/:id")
   .get(getCategoryById)
-  .put(
+  .patch(
     authMiddleware(["admin"]),
+    [upload.single("image"), handleMulterError],
     validate(updateCategorySchemas),
     updateCategory
   )

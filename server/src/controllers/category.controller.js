@@ -4,9 +4,13 @@ import * as CategoryService from "../services/category.service.js";
 
 export const createCategory = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
-  // todo: add image upload
 
-  const category = await CategoryService.createCategory({ title, description });
+  const category = await CategoryService.createCategory({
+    title,
+    description,
+    image: req.file,
+  });
+
   return res
     .status(201)
     .json(ApiResponse.success(category, "Category created successfully", 201));
@@ -30,11 +34,14 @@ export const getCategoryById = asyncHandler(async (req, res) => {
 
 export const updateCategory = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
+  const image = req.file;
 
-  const category = await CategoryService.updateCategory(req.params.id, {
-    title,
-    description,
-  });
+  const data = {};
+  if (title) data.title = title;
+  if (description) data.description = description;
+  if (image) data.image = image;
+
+  const category = await CategoryService.updateCategory(req.params.id, data);
   return res
     .status(200)
     .json(ApiResponse.success(category, "Category updated successfully", 200));
@@ -42,7 +49,7 @@ export const updateCategory = asyncHandler(async (req, res) => {
 
 export const deleteCategory = asyncHandler(async (req, res) => {
   const category = await CategoryService.deleteCategory(req.params.id);
-  // todo: delete category image
+
   return res
     .status(200)
     .json(ApiResponse.success(category, "Category deleted successfully", 200));
