@@ -25,9 +25,19 @@ export const createCategory = async (categoryDetails) => {
   return category;
 };
 
-export const getCategories = async () => {
-  const categories = await Category.find();
-  return categories;
+export const getCategories = async ({ limit = 20, page = 1 }) => {
+  const currentLimit = Number(limit);
+  const currentPage = Number(page);
+  const skip = (currentPage - 1) * currentLimit;
+
+  const categories = await Category.find().skip(skip).limit(currentLimit);
+  return {
+    items: categories,
+    currentLimit,
+    currentPage,
+    totalDocuments: await Category.countDocuments(),
+    totalPages: Math.ceil((await Category.countDocuments()) / currentLimit),
+  };
 };
 
 export const getCategoryById = async (id) => {
@@ -64,7 +74,7 @@ export const updateCategory = async (id, categoryDetails) => {
 };
 
 export const deleteCategory = async (id) => {
-  const category = await Category.findById(id)
+  const category = await Category.findById(id);
   if (!category) {
     throw ApiError.notFoundError("Category");
   }

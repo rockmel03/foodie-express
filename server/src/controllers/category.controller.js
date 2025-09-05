@@ -17,12 +17,11 @@ export const createCategory = asyncHandler(async (req, res) => {
 });
 
 export const getCategories = asyncHandler(async (req, res) => {
-  const categories = await CategoryService.getCategories();
+  const { limit = 20, page = 1 } = req.query;
+  const data = await CategoryService.getCategories({ limit, page });
   return res
     .status(200)
-    .json(
-      ApiResponse.success(categories, "Categories fetched successfully", 200)
-    );
+    .json(ApiResponse.success(data, "Categories fetched successfully", 200));
 });
 
 export const getCategoryById = asyncHandler(async (req, res) => {

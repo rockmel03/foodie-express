@@ -14,6 +14,10 @@ const categorySchema = new Schema(
       url: String,
       fileId: String,
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
