@@ -1,14 +1,34 @@
 import Food from "../models/food.model.js";
 import ApiError from "../utils/ApiError.js";
 import Category from "../models/category.model.js";
+import { deleteImageFromImageKit, uploadImageToImageKit } from "./imagekit.service.js";
+import mongoose from "mongoose";
+import fs from "fs";
 
 export const createFood = async (foodDetails) => {
-  const { title, description, price, discount, categoryId } = foodDetails;
+  const {
+    title,
+    description,
+    price,
+    discount,
+    categoryId,
+    image,
+    isActive = true,
+  } = foodDetails;
 
   const isCategoryValid = await Category.findById(categoryId);
   if (!isCategoryValid) {
     throw ApiError.notFoundError("Category");
   }
+
+  if (!image) {
+    throw ApiError.badRequestError("Image is required");
+  }
+  const imageKitResponse = await uploadImageToImageKit(
+    image,
+    title,
+    "foodie/foods"
+  );
 
   const food = await Food.create({
     title,
@@ -16,6 +36,8 @@ export const createFood = async (foodDetails) => {
     price,
     discount,
     categoryId,
+    image: imageKitResponse,
+    isActive,
   });
   return food;
 };
@@ -34,16 +56,18 @@ export const getFoods = async ({
   const totalFoods = await Food.countDocuments();
   const totalPages = Math.ceil(totalFoods / currentLimit);
 
-  const foods = await Food.find({
+  const query = {
     $or: [
       { title: { $regex: search, $options: "i" } },
       { description: { $regex: search, $options: "i" } },
     ],
-    categoryId: { $in: [categoryId] },
-  })
-    .skip(skip)
-    .limit(limit)
-    .sort(sort);
+  };
+
+  if (categoryId) {
+    query.categoryId = { $in: [new mongoose.Types.ObjectId(categoryId)] };
+  }
+
+  const foods = await Food.find(query).skip(skip).limit(limit).sort(sort);
 
   return {
     foods,
@@ -59,27 +83,52 @@ export const getFoodById = async (id) => {
   return food;
 };
 
-export const updateFood = async (id, foodDetails) => {
-  const isCategoryValid = await Category.findById(foodDetails.categoryId);
-  if (!isCategoryValid) {
-    throw ApiError.notFoundError("Category");
+export const updateFood = async (
+  id,
+  { title, description, price, discount, categoryId, isActive, image }
+) => {
+  if (categoryId) {
+    const isCategoryValid = await Category.findById(categoryId);
+    if (!isCategoryValid) {
+      throw ApiError.notFoundError("Category");
+    }
   }
+
   const food = await Food.findById(id);
   if (!food) {
     throw ApiError.notFoundError("Food");
   }
 
-  if (food.categoryId) food.categoryId = foodDetails.categoryId;
-  if (food.title) food.title = foodDetails.title;
-  if (food.description) food.description = foodDetails.description;
-  if (food.price) food.price = foodDetails.price;
-  if (food.discount) food.discount = foodDetails.discount;
+  if (image && image.path && fs.existsSync(image.path)) {
+    const imageKitResponse = await uploadImageToImageKit(
+      image,
+      title,
+      "foodie/foods"
+    );
+    food.image = imageKitResponse;
+  }
+
+  if (categoryId) food.categoryId = categoryId;
+  if (title) food.title = title;
+  if (description) food.description = description;
+  if (price) food.price = price;
+  if (discount) food.discount = discount;
+  if (isActive ?? food.isActive) food.isActive = isActive;
 
   await food.save();
   return food;
 };
 
 export const deleteFood = async (id) => {
-  const food = await Food.findByIdAndDelete(id);
-  return food;
+  const food = await Food.findById(id);
+  if (!food) {
+    throw ApiError.notFoundError("Food");
+  }
+
+  // delete image
+  if (food.image?.fileId) {
+    await deleteImageFromImageKit(food.image.fileId);
+  }
+
+  return await Food.findByIdAndDelete(id);
 };

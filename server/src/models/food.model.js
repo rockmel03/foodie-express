@@ -11,6 +11,11 @@ const foodSchema = new Schema(
       ref: "Category",
       required: true,
     },
+    image: {
+      url: { type: String, required: true },
+      fileId: { type: String, required: true },
+    },
+    isActive: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

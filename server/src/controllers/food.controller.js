@@ -3,7 +3,8 @@ import ApiResponse from "../utils/ApiResponse.js";
 import * as FoodService from "../services/food.service.js";
 
 export const createFood = asyncHandler(async (req, res) => {
-  const { title, description, price, discount, categoryId } = req.body;
+  const { title, description, price, discount, categoryId, isActive } = req.body;
+  const image = req.file;
 
   const food = await FoodService.createFood({
     title,
@@ -11,6 +12,8 @@ export const createFood = asyncHandler(async (req, res) => {
     price,
     discount,
     categoryId,
+    isActive,
+    image,
   });
   return res
     .status(201)
@@ -41,7 +44,9 @@ export const getFoodById = asyncHandler(async (req, res) => {
 });
 
 export const updateFood = asyncHandler(async (req, res) => {
-  const { title, description, price, discount, categoryId } = req.body;
+  const { title, description, price, discount, categoryId, isActive } =
+    req.body;
+  const image = req.file;
 
   const food = await FoodService.updateFood(req.params.id, {
     title,
@@ -49,6 +54,8 @@ export const updateFood = asyncHandler(async (req, res) => {
     price,
     discount,
     categoryId,
+    isActive,
+    image,
   });
   return res
     .status(200)

@@ -14,23 +14,31 @@ import upload, { handleMulterError } from "../middlewares/multer.middleware.js";
 const router = Router();
 
 // validation schemas
+const numberSchema = z
+  .string()
+  .refine((val) => !isNaN(parseFloat(val)), {
+    path: "price",
+    message: "Invalid input: expected number, received string",
+  })
+  .transform((val) => parseFloat(val));
+
 const createFoodSchemas = {
   body: z.object({
     title: z.string().min(3).max(30),
     description: z.string().optional(),
-    price: z.number(),
-    discount: z.number().optional(),
+    price: numberSchema,
+    discount: numberSchema.optional(),
     categoryId: z.string(),
   }),
 };
 
 const updateFoodSchemas = {
   body: z.object({
-    title: z.string().min(3).max(30),
+    title: z.string().min(3).max(30).optional(),
     description: z.string().optional(),
-    price: z.number(),
-    discount: z.number().optional(),
-    categoryId: z.string(),
+    price: numberSchema.optional(),
+    discount: numberSchema.optional(),
+    categoryId: z.string().optional(),
   }),
   params: z.object({
     id: z.string(),
@@ -57,7 +65,7 @@ router
 router
   .route("/:id")
   .get(getFoodById)
-  .put(
+  .patch(
     authMiddleware(["admin"]),
     upload.single("image"),
     handleMulterError,
