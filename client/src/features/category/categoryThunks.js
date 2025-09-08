@@ -40,9 +40,13 @@ export const getCategoryById = createAsyncThunk(
 export const createNewCategory = createAsyncThunk(
   "category/create",
   async (data, thunkApi) => {
+    console.log("create new category data", data);
     try {
       const response = await Axios.post(`/api/v1/categories`, data, {
         signal: thunkApi.signal,
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
       });
 
       return response.data;
@@ -57,9 +61,13 @@ export const createNewCategory = createAsyncThunk(
 
 export const updateCategory = createAsyncThunk(
   "category/update",
-  async (data, thunkApi) => {
+  async ([id, data], thunkApi) => {
+    console.log(data.get("image"));
     try {
-      const response = await Axios.patch(`/api/v1/categories`, data, {
+      const response = await Axios.patch(`/api/v1/categories/${id}`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
         signal: thunkApi.signal,
       });
 

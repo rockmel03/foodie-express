@@ -26,9 +26,9 @@ const categorySlice = createSlice({
       .addCase(getAllCategories.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-     /*    console.log("in state ", action.payload?.data) */;
-
-        if (action.payload?.data) {
+        /*    console.log("in state ", action.payload?.data) */ if (
+          action.payload?.data
+        ) {
           if (action.payload.data?.currentPage === 1) {
             state.items = action.payload?.data?.items;
           } else if (action.payload.data?.currentPage > 1) {
@@ -65,7 +65,7 @@ const categorySlice = createSlice({
         state.isLoading = false;
         state.error = null;
         console.log("in state ", action.payload);
-        state.items.push(action.payload);
+        state.items.push(action.payload.data);
       })
       .addCase(createNewCategory.rejected, (state, action) => {
         state.isLoading = false;
@@ -80,10 +80,10 @@ const categorySlice = createSlice({
       .addCase(updateCategory.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        console.log("in state ", action.payload);
+        console.log("in state ", action.payload.data);
 
         state.items = state.items.map((item) =>
-          item.id === action.payload.id ? action.payload : item
+          item._id === action.payload.data._id ? action.payload.data : item
         );
       })
       .addCase(updateCategory.rejected, (state, action) => {
@@ -101,7 +101,7 @@ const categorySlice = createSlice({
         console.log("in state ", action.payload);
         state.error = null;
         state.items = state.items.filter(
-          (item) => item.id !== action.payload.id
+          (item) => item._id !== action.payload.data._id
         );
       })
       .addCase(deleteCategory.rejected, (state, action) => {

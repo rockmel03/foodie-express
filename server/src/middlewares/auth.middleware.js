@@ -6,7 +6,7 @@ export function authMiddleware(roles = []) {
   return asyncHandler(async (req, res, next) => {
     const token = req.headers?.authorization?.replace("Bearer ", "");
     if (!token) {
-      throw ApiError.unauthorized("Unauthorized");
+      throw ApiError.authError("Unauthorized");
     }
 
     try {
