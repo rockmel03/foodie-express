@@ -3,7 +3,7 @@ import Axios from "../../config/axios";
 
 export const getAllFoods = createAsyncThunk(
   "food/getAllFoods",
-  async (query, thunkApi) => {
+  async (query = {}, thunkApi) => {
     const queryParams = new URLSearchParams();
     Object.entries(query).forEach(([key, value]) => {
       queryParams.append(key, value);

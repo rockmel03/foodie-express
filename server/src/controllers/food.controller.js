@@ -3,7 +3,8 @@ import ApiResponse from "../utils/ApiResponse.js";
 import * as FoodService from "../services/food.service.js";
 
 export const createFood = asyncHandler(async (req, res) => {
-  const { title, description, price, discount, categoryId, isActive } = req.body;
+  const { title, description, price, discount, categoryId, isActive } =
+    req.body;
   const image = req.file;
 
   const food = await FoodService.createFood({
@@ -23,13 +24,13 @@ export const createFood = asyncHandler(async (req, res) => {
 export const getFoods = asyncHandler(async (req, res) => {
   const { limit = 10, page = 1, categoryId, search, sort } = req.query;
 
-  const { foods, currentLimit, currentPage, totalDocuments, totalPages } =
+  const { items, currentLimit, currentPage, totalDocuments, totalPages } =
     await FoodService.getFoods({ limit, page, categoryId, search, sort });
   return res
     .status(200)
     .json(
       ApiResponse.success(
-        { foods, currentLimit, currentPage, totalDocuments, totalPages },
+        { items, currentLimit, currentPage, totalDocuments, totalPages },
         "Foods fetched successfully",
         200
       )

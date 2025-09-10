@@ -1,7 +1,10 @@
 import Food from "../models/food.model.js";
 import ApiError from "../utils/ApiError.js";
 import Category from "../models/category.model.js";
-import { deleteImageFromImageKit, uploadImageToImageKit } from "./imagekit.service.js";
+import {
+  deleteImageFromImageKit,
+  uploadImageToImageKit,
+} from "./imagekit.service.js";
 import mongoose from "mongoose";
 import fs from "fs";
 
@@ -70,7 +73,7 @@ export const getFoods = async ({
   const foods = await Food.find(query).skip(skip).limit(limit).sort(sort);
 
   return {
-    foods,
+    items: foods,
     currentLimit,
     currentPage,
     totalDocuments: totalFoods,

@@ -1,8 +1,8 @@
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import {
   Form,
   FormControl,
@@ -11,42 +11,73 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from "@/components/ui/select";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { getAllCategories } from "../../category/categoryThunks";
 
-const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
+const FoodForm = ({ initialData, onSubmit, onCancel }) => {
   const form = useForm({
     defaultValues: {
-      name: initialData?.name || '',
-      description: initialData?.description || '',
-      price: initialData?.price?.toString() || '',
-      categoryId: initialData?.categoryId?.toString() || '',
-      image: initialData?.image || '',
+      name: initialData?.title || "",
+      description: initialData?.description || "",
+      price: initialData?.price?.toString() || "",
+      categoryId: initialData?.categoryId?.toString() || "",
+      image: initialData?.image || "",
       isAvailable: initialData?.isAvailable ?? true,
-      ingredients: initialData?.ingredients?.join(', ') || '',
-      allergens: initialData?.allergens?.join(', ') || '',
-      cookingTime: initialData?.cookingTime?.toString() || '',
-      calories: initialData?.calories?.toString() || '',
-    }
+      ingredients: initialData?.ingredients?.join(", ") || "",
+      allergens: initialData?.allergens?.join(", ") || "",
+      cookingTime: initialData?.cookingTime?.toString() || "",
+      calories: initialData?.calories?.toString() || "",
+    },
   });
+
+  const categories = useSelector((state) => state.category.items);
+  const dispatch = useDispatch();
+  console.log(categories);
+
+  useEffect(() => {
+    if (categories.length === 0) {
+      dispatch(getAllCategories({}));
+    }
+  }, [categories, dispatch]);
 
   const handleSubmit = (data) => {
     const processedData = {
       ...data,
-      ingredients: data.ingredients.split(',').map(item => item.trim()).filter(Boolean),
-      allergens: data.allergens.split(',').map(item => item.trim()).filter(Boolean),
-      categoryId: parseInt(data.categoryId),
+      ingredients: data.ingredients
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+      allergens: data.allergens
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
       price: parseFloat(data.price),
       cookingTime: parseInt(data.cookingTime),
-      calories: parseInt(data.calories)
+      calories: parseInt(data.calories),
     };
-    onSubmit(processedData);
+
+    const formData = new FormData();
+    Object.entries(processedData).forEach(([key, value]) =>
+      formData.set(key, value)
+    );
+
+    console.log(
+      "formData ====> ",
+      formData.keys().reduce((acc, curr) => {
+        acc[curr] = formData.get(curr);
+        return acc;
+      }, {})
+    );
+    onSubmit(formData);
     form.reset();
   };
 
@@ -56,8 +87,8 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="name"
-            rules={{ required: 'Food item name is required' }}
+            name="title"
+            rules={{ required: "Food item title is required" }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Item Name</FormLabel>
@@ -72,11 +103,14 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
           <FormField
             control={form.control}
             name="categoryId"
-            rules={{ required: 'Category is required' }}
+            rules={{ required: "Category is required" }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select a category" />
@@ -84,8 +118,8 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
                   </FormControl>
                   <SelectContent>
                     {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.name}
+                      <SelectItem key={category._id} value={category._id}>
+                        {category.title}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -99,12 +133,12 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
         <FormField
           control={form.control}
           name="description"
-          rules={{ required: 'Description is required' }}
+          rules={{ required: "Description is required" }}
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Brief description of the food item"
                   className="resize-none"
                   {...field}
@@ -119,18 +153,18 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
           <FormField
             control={form.control}
             name="price"
-            rules={{ 
-              required: 'Price is required',
+            rules={{
+              required: "Price is required",
               pattern: {
                 value: /^\d+(\.\d{1,2})?$/,
-                message: 'Please enter a valid price'
-              }
+                message: "Please enter a valid price",
+              },
             }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Price ($)</FormLabel>
                 <FormControl>
-                  <Input 
+                  <Input
                     placeholder="0.00"
                     type="number"
                     step="0.01"
@@ -143,7 +177,7 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
             )}
           />
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="cookingTime"
             rules={{ required: 'Cooking time is required' }}
@@ -161,9 +195,9 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
-          <FormField
+          {/* <FormField
             control={form.control}
             name="calories"
             render={({ field }) => (
@@ -180,31 +214,44 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
         </div>
 
+        {/* Image Upload */}
         <FormField
           control={form.control}
           name="image"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Image URL</FormLabel>
+              <FormLabel>Upload Image</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="https://example.com/image.jpg"
-                  type="url"
-                  {...field}
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    field.onChange(file);
+                  }}
                 />
               </FormControl>
+              {field.value && field.value instanceof File && (
+                <div className="mt-2">
+                  <img
+                    src={URL.createObjectURL(field.value)}
+                    alt="Preview"
+                    className="h-24 w-24 object-cover rounded-md border"
+                  />
+                </div>
+              )}
               <FormDescription>
-                Optional: Add an image URL for this food item
+                Upload an image for this category
               </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="ingredients"
           render={({ field }) => (
@@ -223,9 +270,9 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
-        <FormField
+        {/* <FormField
           control={form.control}
           name="allergens"
           render={({ field }) => (
@@ -243,7 +290,7 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
 
         <FormField
           control={form.control}
@@ -271,7 +318,7 @@ const FoodForm = ({ initialData, categories, onSubmit, onCancel }) => {
             Cancel
           </Button>
           <Button type="submit">
-            {initialData ? 'Update Food Item' : 'Create Food Item'}
+            {initialData ? "Update Food Item" : "Create Food Item"}
           </Button>
         </div>
       </form>

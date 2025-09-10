@@ -26,9 +26,8 @@ const productSlice = createSlice({
       .addCase(getAllFoods.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        /*    console.log("in state ", action.payload?.data) */ if (
-          action.payload?.data
-        ) {
+        console.log("in state ", action.payload?.data);
+        if (action.payload?.data) {
           if (action.payload.data?.currentPage === 1) {
             state.items = action.payload?.data?.items;
           } else if (action.payload.data?.currentPage > 1) {
