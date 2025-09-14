@@ -11,7 +11,12 @@ export function authMiddleware(roles = []) {
 
     try {
       const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      req.user = decoded;
+      req.user = decoded.user;
+
+      if (roles.length > 0 && !roles.includes(decoded.user.role)) {
+        throw new ApiError(403, "Forbidden");
+      }
+
       next();
     } catch (error) {
       throw ApiError.authError("Unauthorized");

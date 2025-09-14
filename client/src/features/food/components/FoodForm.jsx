@@ -26,7 +26,7 @@ import { getAllCategories } from "../../category/categoryThunks";
 const FoodForm = ({ initialData, onSubmit, onCancel }) => {
   const form = useForm({
     defaultValues: {
-      name: initialData?.title || "",
+      title: initialData?.title || "",
       description: initialData?.description || "",
       price: initialData?.price?.toString() || "",
       categoryId: initialData?.categoryId?.toString() || "",
@@ -41,7 +41,6 @@ const FoodForm = ({ initialData, onSubmit, onCancel }) => {
 
   const categories = useSelector((state) => state.category.items);
   const dispatch = useDispatch();
-  console.log(categories);
 
   useEffect(() => {
     if (categories.length === 0) {
@@ -91,7 +90,7 @@ const FoodForm = ({ initialData, onSubmit, onCancel }) => {
             rules={{ required: "Food item title is required" }}
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Item Name</FormLabel>
+                <FormLabel>Item Title</FormLabel>
                 <FormControl>
                   <Input placeholder="e.g., Margherita Pizza" {...field} />
                 </FormControl>

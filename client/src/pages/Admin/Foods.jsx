@@ -16,13 +16,16 @@ import toast from "react-hot-toast";
 import FoodItemsGrid from "../../features/food/components/FoodItemsGrid";
 import FoodFileters from "../../features/food/components/FoodFileters";
 import { useDispatch, useSelector } from "react-redux";
-import { createNewFood } from "../../features/food/foodThunk";
+import {
+  createNewFood,
+  deleteFood,
+  updateFood,
+} from "../../features/food/foodThunk";
 
 const Foods = () => {
   const foodItems = useSelector((state) => state.food.items);
 
   const [filteredItems, setFilteredItems] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [filterAvailability, setFilterAvailability] = useState("all");
@@ -73,38 +76,35 @@ const Foods = () => {
     }
   };
 
-  const handleUpdateItem = (itemData) => {
-    const selectedCategory = categories.find(
-      (cat) => cat.id === parseInt(itemData.categoryId)
-    );
-    setFoodItems((prev) =>
-      prev.map((item) =>
-        item.id === editingItem.id
-          ? {
-              ...item,
-              ...itemData,
-              categoryName: selectedCategory?.name || "",
-              price: parseFloat(itemData.price),
-              cookingTime: parseInt(itemData.cookingTime),
-              calories: parseInt(itemData.calories),
-            }
-          : item
-      )
-    );
-    setEditingItem(null);
-    setIsFormOpen(false);
-    toast({
-      title: "Success",
-      description: "Food item updated successfully!",
-    });
+  const handleUpdateItem = async (itemData) => {
+    const toastId = toast.loading("Updating food item...");
+
+    try {
+      const res = await dispatch(
+        updateFood([editingItem._id, itemData])
+      ).unwrap();
+      toast.success(res.data?.message || "Food item updated successfully!", {
+        id: toastId,
+      });
+      setEditingItem(null);
+      setIsFormOpen(false);
+    } catch (error) {
+      toast.error(error, { id: toastId });
+    }
   };
 
-  const handleDeleteItem = (itemId) => {
-    setFoodItems((prev) => prev.filter((item) => item.id !== itemId));
-    toast({
-      title: "Success",
-      description: "Food item deleted successfully!",
-    });
+  const handleDeleteItem = async (itemId) => {
+    const toastId = toast.loading("Deleting food item...");
+
+    try {
+      const res = await dispatch(deleteFood(itemId)).unwrap();
+      toast.success(res.data?.message || "Food item deleted successfully!", {
+        id: toastId,
+      });
+      setIsFormOpen(false);
+    } catch (error) {
+      toast.error(error, { id: toastId });
+    }
   };
 
   const openEditForm = (item) => {
@@ -144,7 +144,6 @@ const Foods = () => {
             </DialogHeader>
             <FoodForm
               initialData={editingItem}
-              categories={categories}
               onSubmit={editingItem ? handleUpdateItem : handleCreateItem}
               onCancel={() => setIsFormOpen(false)}
             />
