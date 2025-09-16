@@ -1,8 +1,14 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Eye } from "lucide-react";
+import { Edit, Trash2, Eye, Star, Plus } from "lucide-react";
 import { Link } from "react-router";
 
 import {
@@ -16,100 +22,141 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useSelector } from "react-redux";
 
-const FoodCard = ({ item, openEditForm, handleDeleteItem }) => {
+const FoodCard = ({
+  food,
+  getCategoryTitle = () => "",
+  discountedPrice = 0,
+  openEditForm = () => {
+    alert("Edit form");
+  },
+  handleDeleteItem = () => {
+    alert("Delete item");
+  },
+  handleFoodClick = () => {
+    alert("Food clicked");
+  },
+  handleAddToCart = () => {
+    alert("Add to cart");
+  },
+}) => {
+  const { user } = useSelector((state) => state.auth);
+
   return (
-    <Card className="overflow-hidden">
-      <div className="aspect-square relative">
+    <Card
+      key={food._id}
+      className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
+    >
+      <div onClick={() => handleFoodClick(food)} className="relative">
         <img
-          src={item.image?.url}
-          alt={item.title}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            e.target.src = `https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300`;
-          }}
+          src={food.image.url}
+          alt={food.title}
+          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <div className="absolute top-2 right-2">
-          <Badge variant={item.isAvailable ? "default" : "secondary"}>
-            {item.isAvailable ? "Available" : "Out of Stock"}
+        {food.discount > 0 && (
+          <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
+            {food.discount}% OFF
           </Badge>
-        </div>
-        <div className="absolute bottom-2 left-2">
-          <Badge
-            variant="outline"
-            className="bg-black/50 text-white border-white/20"
-          >
-            {item.categoryName}
-          </Badge>
-        </div>
+        )}
+        <Badge
+          variant="secondary"
+          className="absolute top-2 right-2 bg-white/90 text-gray-700"
+        >
+          {getCategoryTitle(food.category?._id)}
+        </Badge>
       </div>
 
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle className="text-lg">{item.title}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {item.description}
-            </p>
-          </div>
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-start">
+          <CardTitle
+            className="text-lg hover:text-blue-600 cursor-pointer"
+            onClick={() => handleFoodClick(food)}
+          >
+            {food.title}
+          </CardTitle>
+          {food.rating && (
+            <div className="flex items-center gap-1 text-yellow-500">
+              <Star className="w-4 h-4 fill-current" />
+              <span className="text-sm text-gray-600">{food.rating}</span>
+            </div>
+          )}
         </div>
+        <CardDescription className="text-sm">
+          {food.description}
+        </CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-2xl font-bold text-primary">
-              ${item.price}
+      <CardContent className="pt-0">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-lg font-bold text-green-600">
+              ${discountedPrice.toFixed(2)}
             </span>
-            {/* <div className="flex items-center space-x-1 text-sm text-muted-foreground">
-            <span>{item.cookingTime}min</span>
-            <span>•</span>
-            <span>{item.calories}cal</span>
-          </div> */}
+            {food.discount > 0 && (
+              <span className="text-sm text-gray-500 line-through">
+                ${food.price.toFixed(2)}
+              </span>
+            )}
           </div>
+          {user?.role !== "admin" && (
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleAddToCart(food);
+              }}
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+            >
+              <Plus className="w-4 h-4 mr-1" />
+              Add
+            </Button>
+          )}
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm" asChild>
-                <Link to={`/foods/${item._id}`}>
-                  <Eye className="h-4 w-4" />
-                </Link>
-              </Button>
+          {user?.role === "admin" && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm" asChild>
+                  <Link to={`/foods/${food._id}`}>
+                    <Eye className="h-4 w-4" />
+                  </Link>
+                </Button>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => openEditForm(item)}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => openEditForm(food)}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="sm">
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Food Item</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Are you sure you want to delete "{item.title}"? This action
-                      cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => handleDeleteItem(item._id)}
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete Food Item</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete "{food.title}"? This
+                        action cannot be undone.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDeleteItem(food._id)}
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </CardContent>
     </Card>

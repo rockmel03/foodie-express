@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import Container from "../Container";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { useAuth } from "../../features/auth/authSlice";
 import { NavDropDown } from "./NavDropDown";
 
@@ -23,6 +23,7 @@ const navlinks = [
 
 const Navbar = () => {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
 
   return (
     <Container>
@@ -51,7 +52,7 @@ const Navbar = () => {
           {isAuthenticated ? (
             <NavDropDown />
           ) : (
-            <Link to="/login">
+            <Link to="/login" state={{ from: location }}>
               <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
                 Sign In
               </Button>

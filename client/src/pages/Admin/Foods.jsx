@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, UtensilsCrossed } from "lucide-react";
-import { Link } from "react-router";
+import { Plus } from "lucide-react";
+import { useDispatch } from "react-redux";
 import FoodForm from "@/features/food/components/FoodForm";
+import toast from "react-hot-toast";
 import {
   Dialog,
   DialogContent,
@@ -11,56 +11,21 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-import toast from "react-hot-toast";
-import FoodItemsGrid from "../../features/food/components/FoodItemsGrid";
-import FoodFileters from "../../features/food/components/FoodFileters";
-import { useDispatch, useSelector } from "react-redux";
 import {
   createNewFood,
   deleteFood,
   updateFood,
 } from "../../features/food/foodThunk";
+import FoodFileters from "../../features/food/components/FoodFileters";
+import FoodListGrid from "../../features/food/components/FoodListGrid";
+import useFilteredFoods from "../../features/food/hooks/useFilteredFoods";
 
 const Foods = () => {
-  const foodItems = useSelector((state) => state.food.items);
-
-  const [filteredItems, setFilteredItems] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("all");
-  const [filterAvailability, setFilterAvailability] = useState("all");
+  const dispatch = useDispatch();
   const [editingItem, setEditingItem] = useState(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    let filtered = foodItems;
-
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (filterCategory !== "all") {
-      filtered = filtered.filter(
-        (item) => item.categoryId === parseInt(filterCategory)
-      );
-    }
-
-    if (filterAvailability !== "all") {
-      filtered = filtered.filter((item) =>
-        filterAvailability === "available"
-          ? item.isAvailable
-          : !item.isAvailable
-      );
-    }
-
-    setFilteredItems(filtered);
-  }, [foodItems, searchTerm, filterCategory, filterAvailability]);
+  const { filteredFoods } = useFilteredFoods();
 
   const handleCreateItem = async (itemData) => {
     const toastId = toast.loading("Creating food item...");
@@ -155,22 +120,11 @@ const Foods = () => {
       <FoodFileters />
 
       {/* Food Items Grid */}
-      <FoodItemsGrid
-        filteredItems={filteredItems}
+      <FoodListGrid
+        foods={filteredFoods}
         openEditForm={openEditForm}
         handleDeleteItem={handleDeleteItem}
       />
-
-      {filteredItems?.length === 0 && (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <UtensilsCrossed className="h-12 w-12 text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">
-              No food items found matching your criteria.
-            </p>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 };

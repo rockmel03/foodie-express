@@ -70,7 +70,61 @@ export const getFoods = async ({
     query.categoryId = { $in: [new mongoose.Types.ObjectId(categoryId)] };
   }
 
-  const foods = await Food.find(query).skip(skip).limit(limit).sort(sort);
+  // const foods = await Food.find(query)
+  //   .populate({
+  //     path: "categoryId",
+  //     select: "_id title",
+  //   })
+  //   .select("-categoryId")
+  //   .skip(skip)
+  //   .limit(limit)
+  //   .sort(sort);
+
+  const foods = await Food.aggregate([
+    {
+      $match: query,
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryId",
+        foreignField: "_id",
+        as: "category",
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              title: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $unwind: "$category",
+    },
+    {
+      $project: {
+        _id: 1,
+        title: 1,
+        description: 1,
+        price: 1,
+        discount: 1,
+        image: 1,
+        isActive: 1,
+        category: 1,
+      },
+    },
+    {
+      $sort: { createdAt: -1 },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+  ]);
 
   return {
     items: foods,

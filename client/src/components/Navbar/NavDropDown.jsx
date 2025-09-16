@@ -16,10 +16,37 @@ import {
 import { UserRound } from "lucide-react";
 import { useAuth } from "../../features/auth/authSlice";
 import useLogout from "../../features/auth/hooks/useLogout";
+import { Link } from "react-router";
 
 export function NavDropDown() {
   const { user } = useAuth();
   const logout = useLogout();
+
+  const userLinks = [
+    {
+      title: "Profile",
+      path: "/profile",
+    },
+
+    {
+      title: "Cart",
+      path: "/cart",
+    },
+    {
+      title: "Settings",
+      path: "/settings",
+    },
+  ];
+
+  const adminLinks = [
+    {
+      title: "Dashboard",
+      path: "/admin/dashboard",
+    },
+  ];
+
+  const links =
+    user?.role === "admin" ? [...userLinks, ...adminLinks] : userLinks;
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,27 +60,30 @@ export function NavDropDown() {
       <DropdownMenuContent className="w-56" align="start">
         <DropdownMenuLabel>My Account</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
-          {user?.role === "admin" && (
-            <DropdownMenuItem>Dashboard</DropdownMenuItem>
-          )}
-          <DropdownMenuItem>Cart</DropdownMenuItem>
-          <DropdownMenuItem>Settings</DropdownMenuItem>
+          {links.map((link) => (
+            <Link to={link.path} key={link.title}>
+              <DropdownMenuItem>{link.title}</DropdownMenuItem>
+            </Link>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>My Orders</DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>Order History</DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem>View All</DropdownMenuItem>
-                <DropdownMenuItem>More...</DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
+        {user?.role === "user" && (
+          <>
+            <DropdownMenuGroup>
+              <DropdownMenuItem>My Orders</DropdownMenuItem>
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>Order History</DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuItem>View All</DropdownMenuItem>
+                    <DropdownMenuItem>More...</DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
