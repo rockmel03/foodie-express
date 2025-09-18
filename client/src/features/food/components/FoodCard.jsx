@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Eye, Star, Plus } from "lucide-react";
+import { Edit, Trash2, Eye, Star, Plus, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 
 import {
@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useSelector } from "react-redux";
+import AddToCartButton from "../../cart/components/AddToCartButton";
 
 const FoodCard = ({
   food,
@@ -36,9 +37,6 @@ const FoodCard = ({
   },
   handleFoodClick = () => {
     alert("Food clicked");
-  },
-  handleAddToCart = () => {
-    alert("Add to cart");
   },
 }) => {
   const { user } = useSelector((state) => state.auth);
@@ -100,17 +98,24 @@ const FoodCard = ({
             )}
           </div>
           {user?.role !== "admin" && (
-            <Button
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleAddToCart(food);
-              }}
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              Add
-            </Button>
+            <AddToCartButton foodId={food._id}>
+              {({ loading }) => (
+                <Button
+                  size="sm"
+                  disabled={loading}
+                  className="bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  {!loading ? (
+                    <>
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add
+                    </>
+                  ) : (
+                    <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                  )}
+                </Button>
+              )}
+            </AddToCartButton>
           )}
 
           {user?.role === "admin" && (

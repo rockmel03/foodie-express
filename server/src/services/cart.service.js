@@ -34,7 +34,7 @@ export const addToCart = async (userId, foodId, quantity = 1) => {
   return cart;
 };
 
-export const removeFromCart = async (userId, foodId, quantity = 1) => {
+export const updateCartItem = async (userId, foodId, itemData = {}) => {
   const cart = await Cart.findOne({ userId });
   if (!cart) {
     return null;
@@ -46,19 +46,48 @@ export const removeFromCart = async (userId, foodId, quantity = 1) => {
   }
 
   const isExistingFood = cart.items.find((item) => item.foodId.equals(foodId));
-  if (isExistingFood) {
-    if (isExistingFood.quantity <= quantity) {
-      cart.items = cart.items.filter((item) => !item.foodId.equals(foodId));
-    } else {
+  if (!isExistingFood) {
+    throw ApiError.notFoundError("Food item in cart");
+  }
+
+  if (!isNaN(itemData.quantity) && itemData.quantity) {
+    if (itemData.quantity > 0) {
       cart.items = cart.items.map((item) => {
         if (item.foodId.equals(foodId)) {
-          item.quantity -= quantity;
+          item.quantity = parseInt(Number(itemData.quantity));
         }
         return item;
       });
+    } else {
+      cart.items = cart.items.filter((item) => !item.foodId.equals(foodId));
     }
-    cart.items = cart.items.filter((item) => item.quantity > 0);
   }
+  if (cart.items.length === 0) {
+    await cart.deleteOne();
+    return cart;
+  } else {
+    await cart.save();
+    return cart;
+  }
+};
+
+export const deleteCartItem = async (userId, foodId) => {
+  const cart = await Cart.findOne({ userId });
+  if (!cart) {
+    return null;
+  }
+
+  const food = await Food.findById(foodId);
+  if (!food) {
+    throw ApiError.notFoundError("Food");
+  }
+
+  const isExistingFood = cart.items.find((item) => item.foodId.equals(foodId));
+  if (!isExistingFood) {
+    throw ApiError.notFoundError("Food item in cart");
+  }
+
+  cart.items = cart.items.filter((item) => !item.foodId.equals(foodId));
   if (cart.items.length === 0) {
     await cart.deleteOne();
     return cart;
