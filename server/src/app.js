@@ -25,7 +25,7 @@ app.use("/api/v1", healthCheckRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/categories", categoryRouter);
 app.use("/api/v1/foods", foodRouter);
-app.use("/api/v1/carts", cartRouter);
+app.use("/api/v1/cart", cartRouter);
 
 // global error handler
 app.use(errorHandler);
