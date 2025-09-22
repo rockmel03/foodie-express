@@ -15,7 +15,9 @@ export const updateCartItem = asyncHandler(async (req, res) => {
   const { foodId } = req.params;
   const { quantity } = req.body;
 
-  const cart = await CartService.updateCartItem(req.user._id, foodId, quantity);
+  const cart = await CartService.updateCartItem(req.user._id, foodId, {
+    quantity,
+  });
   return res
     .status(200)
     .json(ApiResponse.success(cart, "Food updated in cart successfully", 200));

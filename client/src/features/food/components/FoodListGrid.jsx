@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { ShoppingCart, UtensilsCrossed } from "lucide-react";
 
@@ -8,12 +8,12 @@ import FoodCard from "./FoodCard";
 import toast from "react-hot-toast";
 import { getAllFoods } from "../foodThunk";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router";
 
 const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
   const { items: categories } = useSelector((state) => state.category);
+  const { items: cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-
-  const [cart, setCart] = useState([]);
 
   const calculateDiscountedPrice = (price, discount) => {
     return discount > 0 ? price - (price * discount) / 100 : price;
@@ -27,20 +27,6 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
   const handleFoodClick = (food) => {
     // Navigate to food details page (mock implementation)
     alert(`Navigating to details page for: ${food.title}`);
-  };
-
-  const handleAddToCart = (food) => {
-    setCart((prev) => {
-      const existingItem = prev.find((item) => item._id === food._id);
-      if (existingItem) {
-        return prev.map((item) =>
-          item._id === food._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prev, { ...food, quantity: 1 }];
-    });
   };
 
   useEffect(() => {
@@ -74,9 +60,11 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
                 cart
               </span>
             </div>
-            <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-              View Cart
-            </Button>
+            <Link to="/cart">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
+                View Cart
+              </Button>
+            </Link>
           </div>
         </div>
       )}
@@ -94,7 +82,6 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
               food={food}
               getCategoryTitle={getCategoryTitle}
               discountedPrice={discountedPrice}
-              handleAddToCart={handleAddToCart}
               handleFoodClick={handleFoodClick}
               handleDeleteItem={handleDeleteItem}
               openEditForm={openEditForm}

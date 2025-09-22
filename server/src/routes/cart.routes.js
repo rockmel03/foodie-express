@@ -16,18 +16,10 @@ router.use(authMiddleware(["user"]));
 
 // validation schemas
 
-const numberSchema = z
-  .string()
-  .refine((val) => !isNaN(parseFloat(val)), {
-    path: "price",
-    message: "Invalid input: expected number, received string",
-  })
-  .transform((val) => parseFloat(val));
-
 const addToCartSchemas = {
   body: z.object({
     foodId: z.string(),
-    quantity: numberSchema,
+    quantity: z.number().default(1),
   }),
 };
 
@@ -36,16 +28,13 @@ const updateCartItemSchema = {
     foodId: z.string(),
   }),
   body: z.object({
-    quantity: numberSchema.optional(),
+    quantity: z.number(),
   }),
 };
 
 const deleteCartItemSchema = {
   params: z.object({
-    foodId: z.string,
-  }),
-  body: z.object({
-    quantity: numberSchema,
+    foodId: z.string(),
   }),
 };
 

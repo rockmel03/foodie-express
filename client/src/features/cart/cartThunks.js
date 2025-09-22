@@ -36,7 +36,7 @@ export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async (data, thunkApi) => {
     try {
-      const response = await Axios.post("/api/v1/cart", data, {
+      const response = await Axios.post("/api/v1/cart/items", data, {
         signal: thunkApi.signal,
       });
       return response.data;
@@ -51,7 +51,7 @@ export const addToCart = createAsyncThunk(
 
 export const updateCartItem = createAsyncThunk(
   "cart/updateCartItem",
-  async ({ data }, thunkApi) => {
+  async (data, thunkApi) => {
     const { foodId } = data;
     try {
       const response = await Axios.patch(`/api/v1/cart/items/${foodId}`, data, {

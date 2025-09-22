@@ -1,41 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import useDebounceCallback from "@/hooks/useDebounceCallback";
-import {  } from "../cartThunks";
+import { updateCartItem } from "../cartThunks";
 
 const useQuantityIncrement = (itemId, initialQuantity) => {
-  const [quantity, setQuantity] = useState(initialQuantity || 1);
+  const [quantity, setQuantity] = useState(initialQuantity);
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
 
-  const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1);
-  };
-
-  const decrementQuantity = () => {
-    setQuantity((prev) => prev - 1);
-  };
-
-  const debouncedQuantity = useDebounceCallback(() => {
-    setLoading(true);
-    const toastId = toast.loading("Adding to cart...");
-    try {
-
-      // Todo update quantitiy in database
-      // dispatch(addToCart({ foodId: itemId, quantity })).unwrap();
-      toast.success("Added to cart", { id: toastId });
-    } catch (error) {
-      toast.error(error.message, { id: toastId });
-    } finally {
-      setLoading(false);
-    }
-  }, 1000);
+  const isFirstTime = useRef(true);
 
   useEffect(() => {
-    debouncedQuantity();
-  }, [quantity, debouncedQuantity]);
+    if (isFirstTime.current) {
+      isFirstTime.current = false;
+      return;
+    }
+
+    const toastId = toast.loading("Adding to cart...");
+    setLoading(true);
+    const promise = dispatch(updateCartItem({ foodId: itemId, quantity }));
+    promise
+      .unwrap()
+      .then(() => {
+        toast.success("Updated cart item", { id: toastId });
+      })
+      .catch((error) => {
+        if (error.name === "AbortError") return toast.dismiss(toastId);
+        toast.error(error, { id: toastId });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+
+    return () => {
+      toastId && toast.dismiss(toastId);
+      promise?.abort();
+    };
+  }, [quantity]);
+
+  const incrementQuantity = useCallback(() => {
+    setQuantity((prev) => prev + 1);
+  }, []);
+
+  const decrementQuantity = useCallback(() => {
+    setQuantity((prev) => prev - 1);
+  }, []);
 
   return { quantity, incrementQuantity, decrementQuantity, loading };
 };

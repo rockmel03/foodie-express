@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ShoppingCart, ArrowLeft, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,48 +7,13 @@ import OrderSummaryCard from "../features/cart/components/OrderSummaryCard";
 import PromoCodeCard from "../features/cart/components/PromoCodeCard";
 import DeliveryInformationCard from "../features/cart/components/DeliveryInformationCard";
 import CartItemCard from "../features/cart/components/CartItemCard";
+import CartItemsList from "../features/cart/components/CartItemsList";
+import { useDispatch, useSelector } from "react-redux";
+import { deleteCart, getCart } from "../features/cart/cartThunks";
+import toast from "react-hot-toast";
 
 const CartPage = () => {
-  // Mock cart items data
-  const [cartItems, setCartItems] = useState([
-    {
-      _id: "food1",
-      title: "Margherita Pizza",
-      description: "Classic pizza with fresh tomatoes, mozzarella, and basil",
-      discount: 15,
-      category: "cat1",
-      image: {
-        url: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=300&fit=crop",
-      },
-      price: 12.99,
-      quantity: 2,
-    },
-    {
-      _id: "food2",
-      title: "Beef Burger",
-      description: "Juicy beef patty with lettuce, tomato, and special sauce",
-      discount: 0,
-      category: "cat2",
-      image: {
-        url: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=400&h=300&fit=crop",
-      },
-      price: 9.99,
-      quantity: 1,
-    },
-    {
-      _id: "food3",
-      title: "Chicken Ramen",
-      description: "Rich chicken broth with noodles, egg, and vegetables",
-      discount: 20,
-      category: "cat3",
-      image: {
-        url: "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=400&h=300&fit=crop",
-      },
-      price: 11.5,
-      quantity: 1,
-    },
-  ]);
-
+  const { items: cartItems } = useSelector((state) => state.cart);
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [deliveryAddress, setDeliveryAddress] = useState(
@@ -56,29 +21,14 @@ const CartPage = () => {
   );
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const calculateDiscountedPrice = (price, discount) => {
     return discount > 0 ? price - (price * discount) / 100 : price;
   };
 
-  const updateQuantity = (itemId, newQuantity) => {
-    if (newQuantity === 0) {
-      removeItem(itemId);
-      return;
-    }
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item._id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeItem = (itemId) => {
-    setCartItems((prev) => prev.filter((item) => item._id !== itemId));
-  };
-
   const clearCart = () => {
-    setCartItems([]);
+    dispatch(deleteCart());
   };
 
   const applyPromoCode = () => {
@@ -105,7 +55,10 @@ const CartPage = () => {
 
   // Calculate totals
   const subtotal = cartItems.reduce((sum, item) => {
-    const discountedPrice = calculateDiscountedPrice(item.price, item.discount);
+    const discountedPrice = calculateDiscountedPrice(
+      item.food.price,
+      item.food.discount
+    );
     return sum + discountedPrice * item.quantity;
   }, 0);
 
@@ -135,6 +88,33 @@ const CartPage = () => {
   const goBackToMenu = () => {
     navigate(-1);
   };
+
+  useEffect(() => {
+    const toastId = toast.loading("Loading cart items...");
+
+    const promise = dispatch(getCart());
+    promise
+      .unwrap()
+      .then(() => {
+        toast.success("Cart items loaded successfully", {
+          id: toastId,
+        });
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          toast.dismiss(toastId);
+          return;
+        }
+
+        toast.error("Failed to load cart items", {
+          id: toastId,
+        });
+      });
+
+    return () => {
+      promise?.abort?.();
+    };
+  }, [dispatch]);
 
   if (cartItems.length === 0) {
     return (
@@ -220,36 +200,7 @@ const CartPage = () => {
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
           {/* Cart Items */}
           <div className="xl:col-span-2 space-y-4">
-            <Card>
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-                  <ShoppingCart className="w-5 h-5" />
-                  Order Items
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {cartItems.map((item, index) => {
-                  const discountedPrice = calculateDiscountedPrice(
-                    item.price,
-                    item.discount
-                  );
-                  const itemTotal = discountedPrice * item.quantity;
-
-                  return (
-                    <CartItemCard
-                      key={item._id}
-                      item={item}
-                      updateQuantity={updateQuantity}
-                      removeItem={removeItem}
-                      index={index}
-                      discountedPrice={discountedPrice}
-                      itemTotal={itemTotal}
-                      cartItems={cartItems}
-                    />
-                  );
-                })}
-              </CardContent>
-            </Card>
+            <CartItemsList />
 
             {/* Delivery Information */}
             <DeliveryInformationCard

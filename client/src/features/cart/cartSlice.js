@@ -37,16 +37,16 @@ const cartSlice = createSlice({
       .addCase(getCart.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        state.items = action.payload.data;
+        state.items = action.payload.data?.items || [];
       })
       .addCase(getCart.rejected, setErrorState);
 
     builder
       .addCase(deleteCart.pending, setloadingState)
-      .addCase(deleteCart.fulfilled, (state, action) => {
+      .addCase(deleteCart.fulfilled, (state) => {
         state.isLoading = false;
         state.error = null;
-        state.items = action.payload.data;
+        state.items = [];
       })
       .addCase(deleteCart.rejected, setErrorState);
 
@@ -55,7 +55,7 @@ const cartSlice = createSlice({
       .addCase(addToCart.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        state.items = action.payload.data;
+        state.items = action.payload.data?.items || [];
       })
       .addCase(addToCart.rejected, setErrorState);
 
@@ -64,7 +64,7 @@ const cartSlice = createSlice({
       .addCase(updateCartItem.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        state.items = action.payload.data;
+        state.items = action.payload.data?.items || [];
       })
       .addCase(updateCartItem.rejected, setErrorState);
 
@@ -73,7 +73,7 @@ const cartSlice = createSlice({
       .addCase(deleteCartItem.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        state.items = action.payload.data;
+        state.items = action.payload.data?.items || [];
       })
       .addCase(deleteCartItem.rejected, setErrorState);
   },
