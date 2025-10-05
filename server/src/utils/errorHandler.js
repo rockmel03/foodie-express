@@ -10,5 +10,12 @@ export default function errorHandler(err, req, res, next) {
 
   console.error(err);
   // Handle other unexpected errors
-  res.status(500).json({ message: "Internal server error" });
+  res
+    .status(500)
+    .json({
+      message:
+        process.env.NODE_ENV === "development"
+          ? err.message
+          : "Internal server error",
+    });
 }

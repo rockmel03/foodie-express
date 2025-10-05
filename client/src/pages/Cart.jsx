@@ -11,6 +11,12 @@ import CartItemsList from "../features/cart/components/CartItemsList";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteCart, getCart } from "../features/cart/cartThunks";
 import toast from "react-hot-toast";
+import {
+  createPaymentOrder,
+  verifyPayment,
+} from "../features/payment/paymentThunks";
+import useRazorPay from "../hooks/useRazorPay";
+import { useAuth } from "../features/auth/authSlice";
 
 const CartPage = () => {
   const { items: cartItems } = useSelector((state) => state.cart);
@@ -77,12 +83,83 @@ const CartPage = () => {
 
   const total = subtotal + deliveryFee + tax - promoDiscount;
 
+  const { payNow } = useRazorPay();
+  const { user } = useAuth();
+
+  const handlePaymentSuccess = ({
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature,
+  }) => {
+    console.log(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+
+    const toastId = toast.loading("Verifying payment...");
+    const promise = dispatch(
+      verifyPayment({
+        razorpay_order_id,
+        razorpay_payment_id,
+        razorpay_signature,
+      })
+    );
+    promise
+      .unwrap()
+      .then(() => {
+        toast.success("Payment verified successfully", {
+          id: toastId,
+        });
+        navigate("/order-success");
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          toast.dismiss(toastId);
+          return;
+        }
+
+        toast.error("Failed to verify payment", {
+          id: toastId,
+        });
+      });
+  };
+
   const handleCheckout = () => {
     if (cartItems.length === 0) {
-      alert("Your cart is empty!");
+      toast.error("Your cart is empty!");
       return;
     }
-    alert("Proceeding to checkout...");
+
+    const toastId = toast.loading("Proceeding to checkout...");
+    const promise = dispatch(createPaymentOrder());
+    promise
+      .unwrap()
+      .then((res) => {
+        toast.success("Payment order created successfully", {
+          id: toastId,
+        });
+        const { id: orderId, amount } = res.data;
+        payNow(
+          {
+            amount,
+            orderId,
+            user: {
+              _id: user._id,
+              name: user.fullName,
+              email: user.email,
+              contact: user.phone,
+            },
+          },
+          handlePaymentSuccess
+        );
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          toast.dismiss(toastId);
+          return;
+        }
+
+        toast.error("Failed to create payment order", {
+          id: toastId,
+        });
+      });
   };
 
   const goBackToMenu = () => {
