@@ -10,6 +10,7 @@ const addressSchema = new Schema(
     state: String,
     country: String,
     zipcode: Number,
+    isDefault: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
