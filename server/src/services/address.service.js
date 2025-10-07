@@ -2,6 +2,15 @@ import mongoose from "mongoose";
 import Address from "../models/address.model.js";
 import ApiError from "../utils/ApiError.js";
 
+export const getAddressById = async (addressId) => {
+  const address = await Address.findOne({ _id: addressId });
+  if (!address) {
+    throw new ApiError(400, "Invalid address");
+  }
+
+  return address;
+};
+
 export const getAddresses = async ({ userId }) => {
   try {
     const addresses = await Address.find({ userId }).sort({

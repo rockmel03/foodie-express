@@ -21,7 +21,8 @@ import categoryRouter from "./routes/category.routes.js";
 import foodRouter from "./routes/food.routes.js";
 import cartRouter from "./routes/cart.routes.js";
 import paymentRouter from "./routes/payment.routes.js";
-import addressRoutes from './routes/address.routes.js';
+import addressRoutes from "./routes/address.routes.js";
+import orderRoutes from "./routes/order.routes.js";
 
 app.use("/api/v1", healthCheckRouter);
 app.use("/api/v1/users", userRouter);
@@ -30,6 +31,7 @@ app.use("/api/v1/foods", foodRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/payments", paymentRouter);
 app.use("/api/v1/addresses", addressRoutes);
+app.use("/api/v1/orders", orderRoutes);
 
 // global error handler
 app.use(errorHandler);

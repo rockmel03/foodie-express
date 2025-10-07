@@ -1,8 +1,9 @@
 import crypto from "crypto";
 import Razorpay from "../config/razorpay.js";
 import ApiError from "../utils/ApiError.js";
+// import Payment from "../models/payment.model.js";
 
-export const createPaymentOrder = async ({ amount, currency = "INR" }) => {
+export const createRazorpayOrder = async ({ amount, currency = "INR" }) => {
   const options = {
     amount: amount * 100,
     currency,
@@ -18,7 +19,7 @@ export const createPaymentOrder = async ({ amount, currency = "INR" }) => {
   }
 };
 
-export const verifyPayment = async ({
+export const verifyRazorpayPayment = async ({
   razorpay_order_id,
   razorpay_payment_id,
   razorpay_signature,
