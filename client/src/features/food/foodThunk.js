@@ -26,6 +26,31 @@ export const getAllFoods = createAsyncThunk(
   }
 );
 
+export const searchFoods = createAsyncThunk(
+  "food/searchFoods",
+  async (query = {}, thunkApi) => {
+    const queryParams = new URLSearchParams();
+    Object.entries(query).forEach(([key, value]) => {
+      queryParams.append(key, value);
+    });
+
+    try {
+      const response = await Axios.get(
+        `/api/v1/foods?${queryParams.toString()}`,
+        {
+          signal: thunkApi.signal,
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return thunkApi.rejectWithValue(
+        error.response?.data?.message || "Failed to get food items"
+      );
+    }
+  }
+);
+
 export const getFoodById = createAsyncThunk(
   "food/getFoodById",
   async (id, thunkApi) => {

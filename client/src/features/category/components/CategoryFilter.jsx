@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Filter } from "lucide-react";
 import { useSearchParams } from "react-router";
@@ -21,7 +20,7 @@ const CategoryFilter = () => {
     if (selectedCategory === "all") {
       setSearchParams({ category: "all" });
     } else {
-      setSearchParams({ category: selectedCategory.title });
+      setSearchParams({ category: selectedCategory });
     }
   }, [setSearchParams, selectedCategory]);
 
@@ -37,13 +36,11 @@ const CategoryFilter = () => {
           <Card
             key={category._id}
             className={`min-w-[200px] cursor-pointer transition-all hover:shadow-md ${
-              selectedCategory._id === category._id
-                ? "ring-2 ring-blue-500"
-                : ""
+              selectedCategory === category.title ? "ring-2 ring-blue-500" : ""
             }`}
             onClick={() =>
               setSelectedCategory((prev) =>
-                prev._id === category._id ? "all" : category
+                prev === category.title ? "all" : category.title
               )
             }
           >

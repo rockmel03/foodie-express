@@ -14,11 +14,17 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Container from "../Container";
+import { useDispatch } from "react-redux";
+import { searchFoods } from "../../features/food/foodThunk";
+import { useNavigate } from "react-router";
 
 const Hero = () => {
   const [searchQuery, setSearchQuery] = useState("");
   // const [location, setLocation] = useState("");
+  const [searchedFoods, setSearchedFoods] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const foodImages = ["🍕", "🍔", "🍜", "🥗", "🍣", "🌮", "🍰", "🥘"];
 
@@ -53,7 +59,44 @@ const Hero = () => {
     }, 2000);
     return () => clearInterval(interval);
   }, []);
-  
+
+  const handleSearch = () => {
+    navigate(`/foods?search=${searchQuery}`);
+  };
+
+  const searchFoodItems = () => {
+    let promise = dispatch(searchFoods({ search: searchQuery }));
+    promise
+      .unwrap()
+      .then((res) => {
+        console.log(res);
+        if (res.status && res.data?.items) {
+          setSearchedFoods(res.data?.items);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    if (!searchQuery) return setSearchedFoods([]);
+    const timeOut = setTimeout(() => {
+      searchFoodItems();
+    }, 300);
+    return () => {
+      clearTimeout(timeOut);
+    };
+  }, [searchQuery]);
+
+  const handleOrderNowClick = () => {
+    navigate("/foods");
+  };
+
+  const handlePopularCategoryClick = (category) => {
+    navigate(`/foods?category=${category}`);
+  };
+
   return (
     <Container>
       <div className="grid lg:grid-cols-2 gap-12 items-center md:py-10 py-5">
@@ -95,6 +138,35 @@ const Hero = () => {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10 h-12 border-0 bg-gray-50 focus-visible:ring-orange-500"
                   />
+                  {/* display searched food items */}
+                  <div className="absolute top-full left-0 right-0 mt-2">
+                    <div className="space-y-1 max-h-80 overflow-auto bg-white">
+                      {searchedFoods.map((food) => (
+                        <div
+                          key={food._id}
+                          onClick={() => navigate(`/foods/${food._id}`)}
+                          className="px-4 py-1 rounded cursor-pointer hover:shadow-md transition-all duration-200 border border-orange-200 hover:border-orange-400 bg-zinc-50"
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-full flex items-center gap-2">
+                              <div className="w-12 h-12 rounded overflow-hidden">
+                                <img
+                                  src={food.image.url}
+                                  alt={food.title}
+                                  className="w-full h-full object-contain"
+                                />
+                              </div>
+                              <div className="flex flex-col">
+                                <p className="font-semibold text-gray-800">
+                                  {food.title}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
 
                 {/* <div className="flex-1 relative">
@@ -108,7 +180,10 @@ const Hero = () => {
                   />
                 </div> */}
 
-                <Button className="h-12 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 px-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
+                <Button
+                  onClick={handleSearch}
+                  className="h-12 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 px-8 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
                   <span className="font-semibold">Search</span>
                   <ChevronRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -125,6 +200,11 @@ const Hero = () => {
               {popularCategories.map((category, index) => (
                 <Card
                   key={index}
+                  onClick={() =>
+                    handlePopularCategoryClick(
+                      category.name.toLocaleLowerCase()
+                    )
+                  }
                   className="cursor-pointer hover:shadow-md transition-all duration-200 border-orange-200 hover:border-orange-400"
                 >
                   <CardContent className="p-4 flex items-center space-x-3">
@@ -168,7 +248,10 @@ const Hero = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4">
-            <Button className="h-14 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200">
+            <Button
+              onClick={handleOrderNowClick}
+              className="h-14 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white px-8 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
+            >
               <span className="font-semibold text-lg">Order Now</span>
               <ChevronRight className="w-6 h-6 ml-2" />
             </Button>
