@@ -13,21 +13,18 @@ const AddressSelector = ({ onSelect, selectedAddressId }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const toastId = toast.loading("Loading addresses...");
-
     const promise = dispatch(getAddresses());
     promise
       .unwrap()
       .then((response) => {
         setAddresses(response.data);
-        toast.success("Addresses loaded successfully", { id: toastId });
       })
       .catch((error) => {
-        console.log(error)
-        if(error.name === "AbortError") {
-          toast.error("Request aborted", { id: toastId });
+        console.log(error);
+        if (error.name === "AbortError") {
+          toast.error("Request aborted");
         } else {
-          toast.error(error, { id: toastId });
+          toast.error(error);
         }
       })
       .finally(() => {
@@ -35,7 +32,6 @@ const AddressSelector = ({ onSelect, selectedAddressId }) => {
       });
 
     return () => {
-      toast.dismiss(toastId);
       setLoading(false);
       promise?.abort?.();
     };
@@ -81,10 +77,10 @@ const AddressSelector = ({ onSelect, selectedAddressId }) => {
   };
 
   if (loading) {
-    return <div>Loading addresses...</div>
+    return <div>Loading addresses...</div>;
   }
 
-  console.log(addresses)
+  console.log(addresses);
   return (
     <div className="space-y-4">
       {!showAddForm && !editingAddress && (

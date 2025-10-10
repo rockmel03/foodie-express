@@ -30,7 +30,7 @@ const DeliveryInformationCard = ({ deliveryAddress, setDeliveryAddress }) => {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 };
 
 export default DeliveryInformationCard;

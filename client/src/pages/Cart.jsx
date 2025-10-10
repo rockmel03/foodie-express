@@ -1,30 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { ShoppingCart, ArrowLeft, Trash2 } from "lucide-react";
+import { ShoppingCart, ArrowLeft, Trash2, Clock, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router";
 import OrderSummaryCard from "../features/cart/components/OrderSummaryCard";
 import PromoCodeCard from "../features/cart/components/PromoCodeCard";
-import DeliveryInformationCard from "../features/cart/components/DeliveryInformationCard";
-import CartItemCard from "../features/cart/components/CartItemCard";
 import CartItemsList from "../features/cart/components/CartItemsList";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteCart, getCart } from "../features/cart/cartThunks";
 import toast from "react-hot-toast";
-import {
-  createPaymentOrder,
-  verifyPayment,
-} from "../features/payment/paymentThunks";
 import useRazorPay from "../hooks/useRazorPay";
 import { useAuth } from "../features/auth/authSlice";
+import AddressSelector from "../features/address/components/AddressSelector";
+import { createOrder, verifyOrderPayment } from "../features/order/orderThunks";
 
 const CartPage = () => {
   const { items: cartItems } = useSelector((state) => state.cart);
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
-  const [deliveryAddress, setDeliveryAddress] = useState(
-    "123 Main Street, New York, NY 10001"
-  );
+  const [selectedAddressId, setSelectedAddressId] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -95,7 +89,7 @@ const CartPage = () => {
 
     const toastId = toast.loading("Verifying payment...");
     const promise = dispatch(
-      verifyPayment({
+      verifyOrderPayment({
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
@@ -103,11 +97,14 @@ const CartPage = () => {
     );
     promise
       .unwrap()
-      .then(() => {
-        toast.success("Payment verified successfully", {
-          id: toastId,
-        });
-        navigate("/order-success");
+      .then((res) => {
+        console.log(res);
+        if (res.statusCode === 200) {
+          toast.success("Payment verified successfully", {
+            id: toastId,
+          });
+          navigate("/orders");
+        }
       })
       .catch((err) => {
         if (err.name === "AbortError") {
@@ -126,29 +123,45 @@ const CartPage = () => {
       toast.error("Your cart is empty!");
       return;
     }
+    if (!selectedAddressId) {
+      toast.error("Please select an address!");
+      return;
+    }
 
     const toastId = toast.loading("Proceeding to checkout...");
-    const promise = dispatch(createPaymentOrder());
+    const promise = dispatch(
+      createOrder({ addressId: selectedAddressId, paymentMethod: "online" })
+    );
     promise
       .unwrap()
       .then((res) => {
         toast.success("Payment order created successfully", {
           id: toastId,
         });
-        const { id: orderId, amount } = res.data;
-        payNow(
-          {
-            amount,
-            orderId,
-            user: {
-              _id: user._id,
-              name: user.fullName,
-              email: user.email,
-              contact: user.phone,
-            },
-          },
-          handlePaymentSuccess
-        );
+        console.log(res);
+        if (res.status) {
+          if (
+            res.data?.payment &&
+            res.data.payment.status === "pending" &&
+            res.data.payment.paymentMethod === "razorpay" &&
+            res.data.payment.razorpayOrderId
+          ) {
+            const { amount, razorpayOrderId: orderId } = res.data.payment;
+            payNow(
+              {
+                amount,
+                orderId,
+                user: {
+                  _id: user._id,
+                  name: user.fullName,
+                  email: user.email,
+                  contact: user.phone,
+                },
+              },
+              handlePaymentSuccess
+            );
+          }
+        }
       })
       .catch((err) => {
         if (err.name === "AbortError") {
@@ -280,22 +293,41 @@ const CartPage = () => {
             <CartItemsList />
 
             {/* Delivery Information */}
-            <DeliveryInformationCard
-              deliveryAddress={deliveryAddress}
-              setDeliveryAddress={setDeliveryAddress}
-            />
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+                  <MapPin className="w-5 h-5" />
+                  Delivery Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Delivery Address
+                  </label>
+                  <AddressSelector
+                    onSelect={setSelectedAddressId}
+                    selectedAddressId={selectedAddressId}
+                  />
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
+                  <Clock className="w-4 h-4 flex-shrink-0" />
+                  <span>Estimated delivery time: 25-35 minutes</span>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Order Summary - Sticky on larger screens */}
           <div className="space-y-4 xl:sticky xl:top-4 xl:self-start">
             {/* Promo Code */}
-            <PromoCodeCard
+            {/* <PromoCodeCard
               appliedPromo={appliedPromo}
               removePromoCode={removePromoCode}
               promoCode={promoCode}
               setPromoCode={setPromoCode}
               applyPromoCode={applyPromoCode}
-            />
+            /> */}
 
             {/* Order Summary */}
             <OrderSummaryCard

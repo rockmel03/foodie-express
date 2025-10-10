@@ -10,7 +10,11 @@ import Payment from "../models/payment.model.js";
 
 export const createOrder = async ({ userId, paymentMethod, addressId }) => {
   const session = await mongoose.startSession();
-  session.startTransaction();
+  const useTransactions = process.env.NODE_ENV === "production";
+  
+  if (useTransactions) {
+    session.startTransaction();
+  }
 
   try {
     const cart = await cartService.getCart(userId);
@@ -21,7 +25,7 @@ export const createOrder = async ({ userId, paymentMethod, addressId }) => {
 
     const address = await addressService.getAddressById(addressId);
 
-    if (!address || address.userId !== userId) {
+    if (!address || address.userId.toString() !== userId) {
       throw new ApiError(400, "Invalid address");
     }
 
@@ -29,17 +33,19 @@ export const createOrder = async ({ userId, paymentMethod, addressId }) => {
     const orderItems = [];
 
     for (const item of cart.items) {
-      const food = item.foodId;
+      const food = item.food;
       if (!food.isActive || (food.quantity && food.quantity < item.quantity)) {
         throw new Error(
           `${food.title} is not available in the requested quantity`
         );
       }
-      total += (food.price - (food.discount || 0)) * item.quantity;
+      const discountedPrice =
+        food.price - (food.price * (food.discount || 0)) / 100;
+      total += discountedPrice * item.quantity;
       orderItems.push({
         foodId: food._id,
         quantity: item.quantity,
-        price: food.price,
+        price: discountedPrice,
         discount: food.discount || 0,
       });
     }
@@ -56,7 +62,7 @@ export const createOrder = async ({ userId, paymentMethod, addressId }) => {
     await order.save({ session });
 
     if (paymentMethod === "online") {
-      const razorpayOrder = await paymentService.createPaymentOrder({
+      const razorpayOrder = await paymentService.createRazorpayOrder({
         amount: total,
         currency: "INR",
       });
@@ -75,10 +81,14 @@ export const createOrder = async ({ userId, paymentMethod, addressId }) => {
       order.paymentId = payment._id;
       await order.save({ session });
 
-      await session.commitTransaction();
+      if (useTransactions) {
+        await session.commitTransaction();
+      }
       session.endSession();
 
-      return { order, payment };
+      const dataToSend = order.toObject();
+      dataToSend.payment = payment.toObject();
+      return dataToSend;
     } else {
       const payment = new Payment({
         orderId: order._id,
@@ -92,14 +102,21 @@ export const createOrder = async ({ userId, paymentMethod, addressId }) => {
       order.status = "confirmed";
       await order.save({ session });
 
-      await session.commitTransaction();
+      if (useTransactions) {
+        await session.commitTransaction();
+      }
       session.endSession();
 
-      return { order, payment };
+      const dataToSend = order.toObject();
+      dataToSend.payment = payment.toObject();
+      return dataToSend;
     }
   } catch (error) {
-    await session.abortTransaction();
+    if (useTransactions) {
+      await session.abortTransaction();
+    }
     session.endSession();
+    console.log(error);
     throw new ApiError(
       500,
       process.env.NODE_ENV === "development"
@@ -115,7 +132,12 @@ export const verifyOrderPayment = async ({
   razorpay_signature,
 }) => {
   const session = await mongoose.startSession();
-  session.startTransaction();
+
+  const useTransactions = process.env.NODE_ENV === "production";
+
+  if (useTransactions) {
+    session.startTransaction();
+  }
 
   try {
     const paymentStatus = await paymentService.verifyRazorpayPayment({
@@ -139,18 +161,20 @@ export const verifyOrderPayment = async ({
     payment.status = "success";
     payment.razorpayPaymentId = razorpay_payment_id;
     payment.razorpaySignature = razorpay_signature;
-    await payment.save({ session });
+    await payment.save(useTransactions ? { session } : undefined);
 
     const order = await Order.findByIdAndUpdate(
       payment.orderId,
       { status: "confirmed" },
-      { new: true, session }
+      { new: true, session: useTransactions ? session : undefined }
     ).populate("items.foodId");
 
     // clear cart
     await cartService.deleteCart(order.userId);
 
-    await session.commitTransaction();
+    if (useTransactions) {
+      await session.commitTransaction();
+    }
     session.endSession();
 
     // Todo: Send confirmation email
