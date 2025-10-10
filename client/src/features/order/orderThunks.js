@@ -52,3 +52,46 @@ export const verifyOrderPayment = createAsyncThunk(
     }
   }
 );
+
+export const getAllOrders = createAsyncThunk(
+  "order/getAll",
+  async (query = { limit: 10, page: 1 }, thunkAPI) => {
+    const searchParams = new URLSearchParams();
+
+    for (const element in query) {
+      searchParams.set(element, query[element]);
+    }
+
+    try {
+      const response = await Axios.get(
+        `/api/v1/orders?${searchParams.toString()}`,
+        { signal: thunkAPI.signal }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "failed to fetch orders"
+      );
+    }
+  }
+);
+
+export const getOrderById = createAsyncThunk(
+  "order/getById",
+  async (id, thunkAPI) => {
+    try {
+      const response = await Axios.get(`/api/v1/orders/${id}`, {
+        signal: thunkAPI.signal,
+      });
+
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return thunkAPI.rejectWithValue(
+        error.response?.data?.message || "failed to fetch order"
+      );
+    }
+  }
+);

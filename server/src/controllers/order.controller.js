@@ -31,3 +31,24 @@ export const verifyOrderPayment = asyncHandler(async (req, res) => {
     .status(200)
     .json(ApiResponse.success(orderData, "Payment verified successfully"));
 });
+
+export const getAllOrders = asyncHandler(async (req, res) => {
+  const userId = req.user._id;
+  const { limit = "10", page = "1" } = req.query;
+
+  const ordersData = await orderService.getAllOrders({ userId, limit, page });
+
+  return res
+    .status(200)
+    .json(ApiResponse.success(ordersData, "Orders fetched successfully"));
+});
+
+export const getOrderById = asyncHandler(async (req, res) => {
+  const orderId = req.params.id;
+
+  const orderData = await orderService.getOrderById(orderId);
+
+  return res
+    .status(200)
+    .json(ApiResponse.success(orderData, "Order fetched successfully"));
+});

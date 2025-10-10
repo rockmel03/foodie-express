@@ -4,6 +4,8 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import {
   createOrder,
+  getAllOrders,
+  getOrderById,
   verifyOrderPayment,
 } from "../controllers/order.controller.js";
 
@@ -26,7 +28,12 @@ const verifyOrderPaymentSchema = {
   }),
 };
 
-router.post("/", validate(createOrderSchema), createOrder);
+router
+  .route("/")
+  .post(validate(createOrderSchema), createOrder)
+  .get(getAllOrders);
+
 router.post("/verify", validate(verifyOrderPaymentSchema), verifyOrderPayment);
+router.route("/:id").get(getOrderById);
 
 export default router;

@@ -11,7 +11,7 @@ import Payment from "../models/payment.model.js";
 export const createOrder = async ({ userId, paymentMethod, addressId }) => {
   const session = await mongoose.startSession();
   const useTransactions = process.env.NODE_ENV === "production";
-  
+
   if (useTransactions) {
     session.startTransaction();
   }
@@ -189,5 +189,155 @@ export const verifyOrderPayment = async ({
         ? error.message
         : "Failed to verify payment"
     );
+  }
+};
+
+export const getAllOrders = async ({ userId, limit = 10, page = 1 }) => {
+  const currentLimit = Number(limit);
+  const currentPage = Number(page);
+  const skip = currentLimit * (currentPage - 1);
+
+  if (!mongoose.isValidObjectId(userId)) {
+    throw new Error("Invalid UserId");
+  }
+
+  try {
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+        },
+      },
+      {
+        $lookup: {
+          from: "payments",
+          localField: "paymentId",
+          foreignField: "_id",
+          as: "payment",
+        },
+      },
+      {
+        $unwind: {
+          path: "$payment",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "address",
+        },
+      },
+
+      {
+        $unwind: {
+          path: "$addressId",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: currentLimit },
+    ]);
+
+    const totalDocuments = await Order.countDocuments({ userId });
+
+    return {
+      currentLimit,
+      currentPage,
+      totalDocuments,
+      totalPages: Math.ceil(totalDocuments / currentLimit),
+      orders,
+    };
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getOrderById = async (orderId) => {
+  if (!mongoose.isValidObjectId(orderId)) {
+    throw new Error("Invalid orderId");
+  }
+  try {
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(orderId),
+        },
+      },
+      { $unwind: "$items" },
+      {
+        $lookup: {
+          from: "foods",
+          localField: "items.foodId",
+          foreignField: "_id",
+          as: "items.food",
+          pipeline: [
+            {
+              $project: {
+                title: 1,
+                description: 1,
+                image: 1,
+              },
+            },
+          ],
+        },
+      },
+      { $unwind: "$items.food" },
+      {
+        $group: {
+          _id: "$_id",
+          userId: { $first: "$userId" },
+          paymentId: { $first: "$paymentId" },
+          addressId: { $first: "$addressId" },
+          status: { $first: "$status" },
+          items: {
+            $push: {
+              quantity: "$items.quantity",
+              food: "$items.food",
+              price: "$items.price",
+              discount: "$items.discount",
+            },
+          },
+          createdAt: { $first: "$createdAt" },
+          updatedAt: { $first: "$updatedAt" },
+        },
+      },
+      {
+        $lookup: {
+          from: "payments",
+          localField: "paymentId",
+          foreignField: "_id",
+          as: "payment",
+        },
+      },
+      {
+        $unwind: {
+          path: "$payment",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: "addresses",
+          localField: "addressId",
+          foreignField: "_id",
+          as: "address",
+        },
+      },
+      {
+        $unwind: {
+          path: "$addressId",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
+
+    return orders[0];
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };

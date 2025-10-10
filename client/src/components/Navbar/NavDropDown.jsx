@@ -70,7 +70,9 @@ export function NavDropDown() {
         {user?.role === "user" && (
           <>
             <DropdownMenuGroup>
-              <DropdownMenuItem>My Orders</DropdownMenuItem>
+              <Link to="/orders">
+                <DropdownMenuItem>My Orders</DropdownMenuItem>
+              </Link>
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>Order History</DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
