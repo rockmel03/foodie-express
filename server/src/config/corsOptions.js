@@ -1,9 +1,10 @@
-import { ALLOWED_ORIGINS } from "../constants.js";
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",") || [];
 
 export default {
   origin: (origin, callback) => {
+    console.log(origin)
     if (
-      ALLOWED_ORIGINS.includes(origin) ||
+      allowedOrigins.includes(origin) ||
       (process.env.NODE_ENV === "development" && !origin)
     ) {
       callback(null, true);
