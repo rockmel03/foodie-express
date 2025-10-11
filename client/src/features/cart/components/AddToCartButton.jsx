@@ -1,30 +1,13 @@
 import React from "react";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { toast } from "react-hot-toast";
-import { addToCart } from "../cartThunks";
+import useAddToCart from "../hooks/useAddToCart";
 
 const AddToCartButton = ({ foodId, className, children, ...props }) => {
-  const dispatch = useDispatch();
-  const [loading, setLoading] = useState(false);
-
-  const handleAddToCart = async () => {
-    const toastId = toast.loading("Adding to cart...");
-    setLoading(true);
-    try {
-      await dispatch(addToCart({ foodId })).unwrap();
-      toast.success("Added to cart", { id: toastId });
-    } catch (error) {
-      toast.error(error, { id: toastId });
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { handleAddToCart, loading } = useAddToCart(foodId);
 
   return (
     <div
       {...props}
-      onClick={handleAddToCart}
+      onClick={() => handleAddToCart()}
       className={
         className instanceof Function ? className({ loading }) : className
       }

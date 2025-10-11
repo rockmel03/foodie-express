@@ -3,17 +3,16 @@ import { useSelector } from "react-redux";
 import { ShoppingCart, UtensilsCrossed } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import FoodCard from "./FoodCard";
 import toast from "react-hot-toast";
 import { getAllFoods } from "../foodThunk";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router";
+import { useNavigate } from "react-router";
 
 const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
   const { items: categories } = useSelector((state) => state.category);
-  const { items: cart } = useSelector((state) => state.cart);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const calculateDiscountedPrice = (price, discount) => {
     return discount > 0 ? price - (price * discount) / 100 : price;
@@ -26,7 +25,7 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
 
   const handleFoodClick = (food) => {
     // Navigate to food details page (mock implementation)
-    alert(`Navigating to details page for: ${food.title}`);
+    navigate(`/foods/${food._id}`);
   };
 
   useEffect(() => {
@@ -50,25 +49,6 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
 
   return (
     <>
-      {cart.length > 0 && (
-        <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <ShoppingCart className="w-5 h-5 text-blue-600" />
-              <span className="text-blue-800 font-medium">
-                {cart.reduce((sum, item) => sum + item.quantity, 0)} items in
-                cart
-              </span>
-            </div>
-            <Link to="/cart">
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                View Cart
-              </Button>
-            </Link>
-          </div>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {foods.map((food) => {
           const discountedPrice = calculateDiscountedPrice(

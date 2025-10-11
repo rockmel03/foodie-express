@@ -18,32 +18,9 @@ import { useAuth } from "../../features/auth/authSlice";
 import useLogout from "../../features/auth/hooks/useLogout";
 import { Link } from "react-router";
 
-export function NavDropDown() {
+export function NavDropDown({ userLinks, adminLinks }) {
   const { user } = useAuth();
   const logout = useLogout();
-
-  const userLinks = [
-    {
-      title: "Profile",
-      path: "/profile",
-    },
-
-    {
-      title: "Cart",
-      path: "/cart",
-    },
-    {
-      title: "Settings",
-      path: "/settings",
-    },
-  ];
-
-  const adminLinks = [
-    {
-      title: "Dashboard",
-      path: "/admin/dashboard",
-    },
-  ];
 
   const links =
     user?.role === "admin" ? [...userLinks, ...adminLinks] : userLinks;

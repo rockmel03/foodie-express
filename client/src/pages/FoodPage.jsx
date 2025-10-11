@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllFoods } from "../features/food/foodThunk";
 import { getAllCategories } from "../features/category/categoryThunks";
 import CategoryFilter from "../features/category/components/CategoryFilter";
-import { useSearchParams } from "react-router";
+import { Link, useSearchParams } from "react-router";
 import FoodListGrid from "../features/food/components/FoodListGrid";
 
 const FoodPage = () => {
@@ -15,10 +15,10 @@ const FoodPage = () => {
   const selectedCategory = searchParams.get("category") || "all";
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [cart, setCart] = useState([]);
 
   const { items: foods } = useSelector((state) => state.food);
   const { items: categories } = useSelector((state) => state.category);
+  const { items: cart } = useSelector((state) => state.cart);
 
   const dispatch = useDispatch();
 
@@ -127,9 +127,14 @@ const FoodPage = () => {
                   cart
                 </span>
               </div>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                View Cart
-              </Button>
+              <Link to="/cart">
+                <Button
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700 cursor-pointer"
+                >
+                  View Cart
+                </Button>
+              </Link>
             </div>
           </div>
         )}

@@ -5,6 +5,7 @@ import Home from "../pages/Home";
 import AppLayout from "../layout/AppLayout";
 import About from "../pages/About";
 import FoodPage from "../pages/FoodPage";
+import FoodDetails from "../pages/FoodDetails";
 
 const PublicRoutes = [
   {
@@ -22,6 +23,10 @@ const PublicRoutes = [
       {
         path: "foods",
         element: <FoodPage />,
+      },
+      {
+        path: "foods/:id",
+        element: <FoodDetails />,
       },
     ],
   },

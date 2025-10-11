@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 import Container from "../Container";
 import { Link, useLocation } from "react-router";
 import { useAuth } from "../../features/auth/authSlice";
 import { NavDropDown } from "./NavDropDown";
+import MobileNav from "./MobileNav";
 
 const navlinks = [
   {
@@ -21,9 +22,41 @@ const navlinks = [
   },
 ];
 
+const userLinks = [
+  {
+    title: "Profile",
+    path: "/profile",
+  },
+  {
+    title: "Cart",
+    path: "/cart",
+  },
+  {
+    title: "Orders",
+    path: "/orders",
+  },
+  {
+    title: "Settings",
+    path: "/settings",
+  },
+];
+
+const adminLinks = [
+  {
+    title: "Dashboard",
+    path: "/admin/dashboard",
+  },
+];
+
 const Navbar = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
+
+  const [mobileNav, setMobileNav] = useState(false);
+
+  const toggleMobileNav = (val) => {
+    setMobileNav((prev) => val ?? !prev);
+  };
 
   return (
     <Container>
@@ -50,7 +83,7 @@ const Navbar = () => {
           ))}
 
           {isAuthenticated ? (
-            <NavDropDown />
+            <NavDropDown userLinks={userLinks} adminLinks={adminLinks} />
           ) : (
             <Link to="/login" state={{ from: location }}>
               <Button className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200">
@@ -60,9 +93,23 @@ const Navbar = () => {
           )}
         </div>
 
-        <Button variant="ghost" size="sm" className="md:hidden">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="md:hidden"
+          onClick={() => toggleMobileNav(true)}
+        >
           <Menu className="h-6 w-6" />
         </Button>
+
+        {mobileNav && (
+          <MobileNav
+            navlinks={navlinks}
+            toggle={toggleMobileNav}
+            userLinks={userLinks}
+            adminLinks={adminLinks}
+          />
+        )}
       </nav>
     </Container>
   );
