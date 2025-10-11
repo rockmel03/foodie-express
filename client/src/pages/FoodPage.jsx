@@ -1,42 +1,24 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Container from "../components/Container";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllFoods } from "../features/food/foodThunk";
-import { getAllCategories } from "../features/category/categoryThunks";
 import CategoryFilter from "../features/category/components/CategoryFilter";
 import { Link, useSearchParams } from "react-router";
 import FoodListGrid from "../features/food/components/FoodListGrid";
+import { useSelector } from "react-redux";
 
 const FoodPage = () => {
   const [searchParams] = useSearchParams();
   const selectedCategory = searchParams.get("category") || "all";
 
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
 
   const { items: foods } = useSelector((state) => state.food);
   const { items: categories } = useSelector((state) => state.category);
   const { items: cart } = useSelector((state) => state.cart);
-
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    let foodPromise;
-    let categoryPromise;
-    if (foods.length === 0) {
-      foodPromise = dispatch(getAllFoods());
-    }
-    if (categories.length === 0) {
-      categoryPromise = dispatch(getAllCategories());
-    }
-
-    return () => {
-      foodPromise?.abort?.();
-      categoryPromise?.abort?.();
-    };
-  }, [dispatch]);
 
   // Search suggestions
   const searchSuggestions = useMemo(() => {
@@ -147,16 +129,7 @@ const FoodPage = () => {
               : `${getCategoryTitle(selectedCategory)} Menu`}
           </h2>
 
-          {filteredFoods.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="text-gray-400 mb-2">No food items found</div>
-              <p className="text-gray-500">
-                Try adjusting your search or category filter
-              </p>
-            </div>
-          ) : (
-            <FoodListGrid foods={filteredFoods} />
-          )}
+          <FoodListGrid foods={filteredFoods} />
         </div>
 
         {/* Results Summary */}

@@ -3,26 +3,53 @@ import { useSelector } from "react-redux";
 import { Card, CardContent } from "@/components/ui/card";
 import { Filter } from "lucide-react";
 import { useSearchParams } from "react-router";
+import { useDispatch } from "react-redux";
+import { getAllCategories } from "../categoryThunks";
+import toast from "react-hot-toast";
 
 const CategoryFilter = () => {
   const { items: categories } = useSelector((state) => state.category);
   const [searchParams, setSearchParams] = useSearchParams();
+  const dispatch = useDispatch();
 
-  const [selectedCategory, setSelectedCategory] = useState(
-    searchParams.get("category") || "all"
-  );
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const filteredCategories = categories.filter((category) => {
     return category.isActive;
   });
 
+  const handleCategoryClick = (category) => {
+    setSelectedCategory((prev) => {
+      const newSelectedCategory =
+        prev === category.title ? "all" : category.title;
+      setSearchParams({ category: newSelectedCategory });
+      return newSelectedCategory;
+    });
+  };
+
   useEffect(() => {
-    if (selectedCategory === "all") {
-      setSearchParams({ category: "all" });
-    } else {
-      setSearchParams({ category: selectedCategory });
-    }
-  }, [setSearchParams, selectedCategory]);
+    const category = searchParams.get("category");
+    setSelectedCategory(category || "all");
+  }, [searchParams]);
+
+  useEffect(() => {
+    const toastId = toast.loading("Loading categories...");
+    const promise = dispatch(getAllCategories());
+    promise
+      .unwrap()
+      .then(() => {
+        toast.success("Categories loaded successfully", { id: toastId });
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") return;
+        toast.error(err, { id: toastId });
+      });
+
+    return () => {
+      toast.dismiss(toastId);
+      promise.abort();
+    };
+  }, [dispatch]);
 
   return (
     <div className="mb-8">
@@ -38,11 +65,7 @@ const CategoryFilter = () => {
             className={`min-w-[200px] cursor-pointer transition-all hover:shadow-md ${
               selectedCategory === category.title ? "ring-2 ring-blue-500" : ""
             }`}
-            onClick={() =>
-              setSelectedCategory((prev) =>
-                prev === category.title ? "all" : category.title
-              )
-            }
+            onClick={() => handleCategoryClick(category)}
           >
             <CardContent className="p-4">
               <div className="flex items-center gap-3">

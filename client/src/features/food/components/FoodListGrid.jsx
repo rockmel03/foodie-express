@@ -69,8 +69,7 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
           );
         })}
       </div>
-
-      {foods?.length === 0 && (
+      {foods.length === 0 && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <UtensilsCrossed className="h-12 w-12 text-muted-foreground mb-4" />
