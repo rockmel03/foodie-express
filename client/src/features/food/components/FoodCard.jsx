@@ -40,7 +40,7 @@ const FoodCard = ({
   },
 }) => {
   const { user } = useSelector((state) => state.auth);
-  console.log("rendered", food.title);
+
   return (
     <Card
       key={food._id}

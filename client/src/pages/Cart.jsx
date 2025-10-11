@@ -13,12 +13,14 @@ import useRazorPay from "../hooks/useRazorPay";
 import { useAuth } from "../features/auth/authSlice";
 import AddressSelector from "../features/address/components/AddressSelector";
 import { createOrder, verifyOrderPayment } from "../features/order/orderThunks";
+import Loading from "../components/Loading";
 
 const CartPage = () => {
   const { items: cartItems } = useSelector((state) => state.cart);
   const [promoCode, setPromoCode] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [selectedAddressId, setSelectedAddressId] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -180,8 +182,8 @@ const CartPage = () => {
   };
 
   useEffect(() => {
+    setIsLoading(true);
     const toastId = toast.loading("Loading cart items...");
-
     const promise = dispatch(getCart());
     promise
       .unwrap()
@@ -199,12 +201,23 @@ const CartPage = () => {
         toast.error("Failed to load cart items", {
           id: toastId,
         });
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     return () => {
       promise?.abort?.();
     };
   }, [dispatch]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen p-4">
+        <Loading />
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (

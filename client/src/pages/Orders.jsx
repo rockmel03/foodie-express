@@ -11,20 +11,25 @@ import {
   Calendar,
   ChevronRight,
 } from "lucide-react";
+import Loading from "../components/Loading";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const dispatch = useDispatch();
 
   useEffect(() => {
+    setIsLoading(true);
     dispatch(getAllOrders())
       .unwrap()
       .then((res) => {
         console.log(res);
         setOrders(res.data.orders);
+        setIsLoading(false);
       })
       .catch((err) => {
         console.error("Failed to fetch orders:", err);
+        setIsLoading(false);
       });
   }, [dispatch]);
 
@@ -66,7 +71,11 @@ const Orders = () => {
           <p className="text-gray-600">View and track all your orders</p>
         </div>
 
-        {orders.length === 0 ? (
+        {isLoading ? (
+          <div className="min-h-screen flex items-center justify-center">
+            <Loading />
+          </div>
+        ) : orders.length === 0 ? (
           <Card>
             <CardContent className="flex flex-col items-center justify-center py-16">
               <Package className="w-16 h-16 text-gray-300 mb-4" />

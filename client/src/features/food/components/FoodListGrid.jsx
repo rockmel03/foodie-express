@@ -8,9 +8,11 @@ import toast from "react-hot-toast";
 import { getAllFoods } from "../foodThunk";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import Loading from "../../../components/Loading.jsx";
 
 const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
   const { items: categories } = useSelector((state) => state.category);
+  const { isLoading: foodsLoading } = useSelector((state) => state.food);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -46,6 +48,10 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
       promise.abort();
     };
   }, [dispatch]);
+
+  if (foodsLoading) {
+    return <Loading />;
+  }
 
   return (
     <>

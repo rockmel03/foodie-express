@@ -14,6 +14,7 @@ import {
   Heart,
 } from "lucide-react";
 import useAddToCart from "../features/cart/hooks/useAddToCart";
+import Loading from "../components/Loading";
 
 const FoodDetails = () => {
   const { id } = useParams();
@@ -23,12 +24,13 @@ const FoodDetails = () => {
   const selectedFood = foods.find((food) => food._id === id) || null;
 
   const [foodData, setFoodData] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
 
   useEffect(() => {
     if (!selectedFood) {
+      setLoading(true);
       dispatch(getFoodById(id))
         .unwrap()
         .then((res) => {
@@ -36,6 +38,9 @@ const FoodDetails = () => {
         })
         .catch((err) => {
           console.error("Failed to fetch food details:", err);
+        })
+        .finally(() => {
+          setLoading(false);
         });
     } else {
       setFoodData(selectedFood);
@@ -71,6 +76,14 @@ const FoodDetails = () => {
   const toggleFavorite = () => {
     setIsFavorite((prev) => !prev);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Loading />
+      </div>
+    );
+  }
 
   if (!foodData) {
     return (

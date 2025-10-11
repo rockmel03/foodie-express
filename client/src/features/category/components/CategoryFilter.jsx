@@ -6,9 +6,12 @@ import { useSearchParams } from "react-router";
 import { useDispatch } from "react-redux";
 import { getAllCategories } from "../categoryThunks";
 import toast from "react-hot-toast";
+import Loading from "../../../components/Loading";
 
 const CategoryFilter = () => {
-  const { items: categories } = useSelector((state) => state.category);
+  const { items: categories, isLoading } = useSelector(
+    (state) => state.category
+  );
   const [searchParams, setSearchParams] = useSearchParams();
   const dispatch = useDispatch();
 
@@ -58,35 +61,41 @@ const CategoryFilter = () => {
         <h2 className="text-xl font-semibold text-gray-800">Categories</h2>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto p-2">
-        {filteredCategories.map((category) => (
-          <Card
-            key={category._id}
-            className={`min-w-[200px] cursor-pointer transition-all hover:shadow-md ${
-              selectedCategory === category.title ? "ring-2 ring-blue-500" : ""
-            }`}
-            onClick={() => handleCategoryClick(category)}
-          >
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <img
-                  src={category.image.url}
-                  alt={category.title}
-                  className="w-12 h-12 rounded-lg object-cover"
-                />
-                <div>
-                  <h3 className="font-medium text-gray-900">
-                    {category.title}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {category.description}
-                  </p>
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <div className="flex gap-4 overflow-x-auto p-2">
+          {filteredCategories.map((category) => (
+            <Card
+              key={category._id}
+              className={`min-w-[200px] cursor-pointer transition-all hover:shadow-md ${
+                selectedCategory === category.title
+                  ? "ring-2 ring-blue-500"
+                  : ""
+              }`}
+              onClick={() => handleCategoryClick(category)}
+            >
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={category.image.url}
+                    alt={category.title}
+                    className="w-12 h-12 rounded-lg object-cover"
+                  />
+                  <div>
+                    <h3 className="font-medium text-gray-900">
+                      {category.title}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {category.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
