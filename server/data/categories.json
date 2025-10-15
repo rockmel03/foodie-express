@@ -1,0 +1,93 @@
+[
+    {
+      "title": "pizza",
+      "description": "Delicious Italian-style pizzas with various toppings",
+      "image": {
+        "url": "https://images.pexels.com/photos/825661/pexels-photo-825661.jpeg",
+        "fileId": "pizza123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "burger",
+      "description": "Juicy burgers with fresh ingredients",
+      "image": {
+        "url": "https://images.pexels.com/photos/2282532/pexels-photo-2282532.jpeg",
+        "fileId": "burger123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "sushi",
+      "description": "Fresh and delicious Japanese sushi rolls",
+      "image": {
+        "url": "https://images.pexels.com/photos/1052189/pexels-photo-1052189.jpeg",
+        "fileId": "sushi123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "pasta",
+      "description": "Authentic Italian pasta with rich sauces",
+      "image": {
+        "url": "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg",
+        "fileId": "pasta123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "sandwich",
+      "description": "Crispy sandwiches with tasty fillings",
+      "image": {
+        "url": "https://images.pexels.com/photos/1600711/pexels-photo-1600711.jpeg",
+        "fileId": "sandwich123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "drinks",
+      "description": "Refreshing beverages and soft drinks",
+      "image": {
+        "url": "https://images.pexels.com/photos/5538346/pexels-photo-5538346.jpeg",
+        "fileId": "drinks123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "desserts",
+      "description": "Sweet treats including cakes, ice creams, and pastries",
+      "image": {
+        "url": "https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg",
+        "fileId": "desserts123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "salads",
+      "description": "Healthy and fresh salad bowls",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
+        "fileId": "salads123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "tacos",
+      "description": "Mexican tacos with flavorful fillings",
+      "image": {
+        "url": "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        "fileId": "tacos123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "biryani",
+      "description": "Fragrant Indian rice dish with spices and meat/veggies",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg",
+        "fileId": "biryani123"
+      },
+      "isActive": true
+    }
+  ]
+  

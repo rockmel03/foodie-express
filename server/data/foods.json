@@ -1,0 +1,363 @@
+[
+    {
+      "title": "Margherita Pizza",
+      "description": "Classic pizza with tomato sauce, mozzarella, and basil",
+      "price": 249,
+      "discount": 0,
+      "category": "pizza",
+      "image": {
+        "url": "https://images.pexels.com/photos/19681747/pexels-photo-19681747.jpeg",
+        "fileId": "margherita123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Pepperoni Pizza",
+      "description": "Pizza topped with mozzarella and spicy pepperoni",
+      "price": 329,
+      "discount": 20,
+      "category": "pizza",
+      "image": {
+        "url": "https://images.pexels.com/photos/1566837/pexels-photo-1566837.jpeg",
+        "fileId": "pepperoni123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Cheeseburger",
+      "description": "Beef patty with cheese, lettuce, and sauce",
+      "price": 199,
+      "discount": 10,
+      "category": "burger",
+      "image": {
+        "url": "https://images.pexels.com/photos/1639557/pexels-photo-1639557.jpeg",
+        "fileId": "cheeseburger123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Veggie Burger",
+      "description": "Grilled veggie patty with avocado and lettuce",
+      "price": 179,
+      "discount": 0,
+      "category": "burger",
+      "image": {
+        "url": "https://images.pexels.com/photos/2983101/pexels-photo-2983101.jpeg",
+        "fileId": "veggieburger123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "California Roll",
+      "description": "Crab, avocado, and cucumber roll with sesame",
+      "price": 299,
+      "discount": 0,
+      "category": "sushi",
+      "image": {
+        "url": "https://images.pexels.com/photos/34227780/pexels-photo-34227780.jpeg",
+        "fileId": "calir123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Salmon Nigiri",
+      "description": "Fresh salmon on seasoned rice",
+      "price": 329,
+      "discount": 15,
+      "category": "sushi",
+      "image": {
+        "url": "https://images.pexels.com/photos/357756/pexels-photo-357756.jpeg",
+        "fileId": "salmonnigiri123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Spaghetti Carbonara",
+      "description": "Pasta tossed with egg, cheese, and pancetta",
+      "price": 249,
+      "discount": 0,
+      "category": "pasta",
+      "image": {
+        "url": "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg",
+        "fileId": "carbonara123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Penne Alfredo",
+      "description": "Creamy Alfredo pasta with mushrooms",
+      "price": 269,
+      "discount": 0,
+      "category": "pasta",
+      "image": {
+        "url": "https://images.pexels.com/photos/1279330/pexels-photo-1279330.jpeg",
+        "fileId": "alfredo123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Club Sandwich",
+      "description": "Triple layer sandwich with veggies and sauce",
+      "price": 149,
+      "discount": 0,
+      "category": "sandwich",
+      "image": {
+        "url": "https://images.pexels.com/photos/1600711/pexels-photo-1600711.jpeg",
+        "fileId": "club123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Paneer Sandwich",
+      "description": "Cottage cheese sandwich with mint chutney",
+      "price": 139,
+      "discount": 5,
+      "category": "sandwich",
+      "image": {
+        "url": "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg",
+        "fileId": "paneer123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Chocolate Shake",
+      "description": "Rich chocolate milkshake with cream topping",
+      "price": 129,
+      "discount": 0,
+      "category": "drinks",
+      "image": {
+        "url": "https://images.pexels.com/photos/5538346/pexels-photo-5538346.jpeg",
+        "fileId": "chocshake123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Mango Smoothie",
+      "description": "Refreshing mango smoothie with yogurt",
+      "price": 119,
+      "discount": 0,
+      "category": "drinks",
+      "image": {
+        "url": "https://images.pexels.com/photos/5538346/pexels-photo-5538346.jpeg",
+        "fileId": "mangosmoothie123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Chocolate Cake",
+      "description": "Moist chocolate cake with ganache frosting",
+      "price": 179,
+      "discount": 0,
+      "category": "desserts",
+      "image": {
+        "url": "https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg",
+        "fileId": "choccake123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Vanilla Ice Cream",
+      "description": "Classic vanilla ice cream scoop",
+      "price": 99,
+      "discount": 0,
+      "category": "desserts",
+      "image": {
+        "url": "https://images.pexels.com/photos/3026808/pexels-photo-3026808.jpeg",
+        "fileId": "vanilla123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Greek Salad",
+      "description": "Cucumber, tomato, feta, and olive salad",
+      "price": 189,
+      "discount": 0,
+      "category": "salads",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
+        "fileId": "greeksalad123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Caesar Salad",
+      "description": "Romaine lettuce with creamy Caesar dressing",
+      "price": 199,
+      "discount": 0,
+      "category": "salads",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
+        "fileId": "caesar123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Chicken Tacos",
+      "description": "Soft tacos filled with spicy chicken",
+      "price": 229,
+      "discount": 0,
+      "category": "tacos",
+      "image": {
+        "url": "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        "fileId": "chicktaco123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Paneer Tacos",
+      "description": "Spicy Indian-style tacos with paneer",
+      "price": 199,
+      "discount": 0,
+      "category": "tacos",
+      "image": {
+        "url": "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        "fileId": "paneertaco123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Hyderabadi Biryani",
+      "description": "Authentic spicy chicken biryani",
+      "price": 299,
+      "discount": 15,
+      "category": "biryani",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg",
+        "fileId": "hydbiryani123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Veg Biryani",
+      "description": "Fragrant basmati rice with vegetables",
+      "price": 249,
+      "discount": 0,
+      "category": "biryani",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg",
+        "fileId": "vegbiryani123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Gulab Jamun",
+      "description": "Soft, warm, and sweet Indian dessert",
+      "price": 99,
+      "discount": 0,
+      "category": "desserts",
+      "image": {
+        "url": "https://images.pexels.com/photos/5946824/pexels-photo-5946824.jpeg",
+        "fileId": "gulabjamun123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Cold Coffee",
+      "description": "Iced coffee blended with chocolate syrup",
+      "price": 129,
+      "discount": 0,
+      "category": "drinks",
+      "image": {
+        "url": "https://images.pexels.com/photos/5538346/pexels-photo-5538346.jpeg",
+        "fileId": "coldcoffee123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Masala Dosa",
+      "description": "Crispy dosa stuffed with spiced potato filling",
+      "price": 169,
+      "discount": 0,
+      "category": "pasta",
+      "image": {
+        "url": "https://images.pexels.com/photos/11170231/pexels-photo-11170231.jpeg",
+        "fileId": "masaladosa123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Paneer Butter Masala",
+      "description": "Soft paneer cubes in creamy tomato gravy",
+      "price": 239,
+      "discount": 10,
+      "category": "biryani",
+      "image": {
+        "url": "https://images.pexels.com/photos/1128678/pexels-photo-1128678.jpeg",
+        "fileId": "paneerbm123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Butter Naan",
+      "description": "Soft Indian bread brushed with butter",
+      "price": 49,
+      "discount": 0,
+      "category": "biryani",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640774/pexels-photo-1640774.jpeg",
+        "fileId": "butternaan123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "French Fries",
+      "description": "Crispy golden fries served with ketchup",
+      "price": 99,
+      "discount": 0,
+      "category": "burger",
+      "image": {
+        "url": "https://images.pexels.com/photos/1583884/pexels-photo-1583884.jpeg",
+        "fileId": "fries123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Garlic Bread",
+      "description": "Toasted bread slices with garlic butter",
+      "price": 129,
+      "discount": 0,
+      "category": "pizza",
+      "image": {
+        "url": "https://images.pexels.com/photos/3641384/pexels-photo-3641384.jpeg",
+        "fileId": "garlicbread123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Mojito",
+      "description": "Refreshing lime and mint drink",
+      "price": 149,
+      "discount": 0,
+      "category": "drinks",
+      "image": {
+        "url": "https://images.pexels.com/photos/5538346/pexels-photo-5538346.jpeg",
+        "fileId": "mojito123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Fruit Salad",
+      "description": "Healthy mix of seasonal fruits",
+      "price": 129,
+      "discount": 0,
+      "category": "salads",
+      "image": {
+        "url": "https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg",
+        "fileId": "fruitsalad123"
+      },
+      "isActive": true
+    },
+    {
+      "title": "Chicken Wrap",
+      "description": "Grilled chicken wrap with spicy mayo",
+      "price": 189,
+      "discount": 0,
+      "category": "sandwich",
+      "image": {
+        "url": "https://images.pexels.com/photos/461198/pexels-photo-461198.jpeg",
+        "fileId": "chickwrap123"
+      },
+      "isActive": true
+    }
+  ]
+  

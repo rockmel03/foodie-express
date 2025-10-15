@@ -1,0 +1,28 @@
+[
+    {
+      "fullname": "Admin User",
+      "username": "admin",
+      "email": "admin@foodieexpress.com",
+      "password": "@Test123",
+      "role": "admin",
+      "phoneNumber": "+1234567890",
+      "isVerified": true
+    },
+    {
+      "fullname": "John Doe",
+      "username": "johndoe",
+      "email": "john@example.com",
+      "password": "@Test123",
+      "phoneNumber": "+1987654321",
+      "isVerified": true
+    },
+    {
+      "fullname": "Kamal Melkani",
+      "username": "rockmel03",
+      "email": "rockmel03@test.com",
+      "password": "@Test123",
+      "phoneNumber": "+1987654321",
+      "isVerified": true
+    }
+  ]
+  
