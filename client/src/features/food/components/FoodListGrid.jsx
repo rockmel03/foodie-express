@@ -31,20 +31,13 @@ const FoodListGrid = ({ foods = [], openEditForm, handleDeleteItem }) => {
   };
 
   useEffect(() => {
-    const toastId = toast.loading("Loading foods...");
     const promise = dispatch(getAllFoods());
-    promise
-      .unwrap()
-      .then(() => {
-        toast.success("Foods loaded successfully", { id: toastId });
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") return;
-        toast.error(err, { id: toastId });
-      });
+    promise.unwrap().catch((err) => {
+      if (err.name === "AbortError") return;
+      toast.error(err);
+    });
 
     return () => {
-      toast.dismiss(toastId);
       promise.abort();
     };
   }, [dispatch]);

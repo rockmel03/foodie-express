@@ -47,7 +47,6 @@ const productSlice = createSlice({
       })
       .addCase(getFoodById.fulfilled, (state, action) => {
         state.isLoading = false;
-        console.log("in state ", action.payload);
         state.error = null;
       })
       .addCase(getFoodById.rejected, (state, action) => {
@@ -63,7 +62,6 @@ const productSlice = createSlice({
       .addCase(createNewFood.fulfilled, (state, action) => {
         state.isLoading = false;
         state.error = null;
-        console.log("in state ", action.payload);
         state.items.push(action.payload.data);
       })
       .addCase(createNewFood.rejected, (state, action) => {
@@ -97,7 +95,6 @@ const productSlice = createSlice({
       })
       .addCase(deleteFood.fulfilled, (state, action) => {
         state.isLoading = false;
-        console.log("in state ", action.payload);
         state.error = null;
         state.items = state.items.filter(
           (item) => item._id !== action.payload.data._id

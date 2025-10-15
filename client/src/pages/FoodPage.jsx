@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import { Search, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ const FoodPage = () => {
   const [searchQuery, setSearchQuery] = useState(
     searchParams.get("search") || ""
   );
+  const searchInputRef = useRef(null);
 
   const { items: foods } = useSelector((state) => state.food);
   const { items: categories } = useSelector((state) => state.category);
@@ -50,6 +51,10 @@ const FoodPage = () => {
     return category ? category.title : "Unknown";
   };
 
+  useEffect(() => {
+    searchInputRef.current.focus();
+  }, []);
+
   return (
     <div className="min-h-screen p-4">
       <Container>
@@ -68,7 +73,8 @@ const FoodPage = () => {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             <Input
-              type="text"
+              type="search"
+              ref={searchInputRef}
               placeholder="Search for food..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

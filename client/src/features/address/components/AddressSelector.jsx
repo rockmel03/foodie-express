@@ -20,7 +20,6 @@ const AddressSelector = ({ onSelect, selectedAddressId }) => {
         setAddresses(response.data);
       })
       .catch((error) => {
-        console.log(error);
         if (error.name === "AbortError") {
           toast.error("Request aborted");
         } else {
@@ -79,8 +78,7 @@ const AddressSelector = ({ onSelect, selectedAddressId }) => {
   if (loading) {
     return <div>Loading addresses...</div>;
   }
-
-  console.log(addresses);
+  
   return (
     <div className="space-y-4">
       {!showAddForm && !editingAddress && (

@@ -36,20 +36,13 @@ const CategoryFilter = () => {
   }, [searchParams]);
 
   useEffect(() => {
-    const toastId = toast.loading("Loading categories...");
     const promise = dispatch(getAllCategories());
-    promise
-      .unwrap()
-      .then(() => {
-        toast.success("Categories loaded successfully", { id: toastId });
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") return;
-        toast.error(err, { id: toastId });
-      });
+    promise.unwrap().catch((err) => {
+      if (err.name === "AbortError") return;
+      toast.error(err);
+    });
 
     return () => {
-      toast.dismiss(toastId);
       promise.abort();
     };
   }, [dispatch]);
