@@ -61,25 +61,28 @@ const CategoryFilter = () => {
           {filteredCategories.map((category) => (
             <Card
               key={category._id}
-              className={`min-w-[200px] cursor-pointer transition-all hover:shadow-md ${
+              className={`min-w-32 sm:min-w-xs cursor-pointer transition-all hover:shadow-md ${
                 selectedCategory === category.title
                   ? "ring-2 ring-blue-500"
                   : ""
               }`}
               onClick={() => handleCategoryClick(category)}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
+              <CardContent className="px-4">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                   <img
                     src={category.image.url}
                     alt={category.title}
-                    className="w-12 h-12 rounded-lg object-cover"
+                    className="h-20 aspect-square rounded-lg object-cover"
                   />
                   <div>
-                    <h3 className="font-medium text-gray-900">
+                    <h3
+                      title={category.description}
+                      className="font-medium text-gray-900 capitalize"
+                    >
                       {category.title}
                     </h3>
-                    <p className="text-sm text-gray-500">
+                    <p className="hidden sm:block text-sm text-gray-500">
                       {category.description}
                     </p>
                   </div>

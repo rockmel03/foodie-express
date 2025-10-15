@@ -19,9 +19,13 @@ const productSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(getAllFoods.pending, (state) => {
+      .addCase(getAllFoods.pending, (state, action) => {
         state.isLoading = true;
         state.error = null;
+
+        if (action.meta.arg?.page === 1) {
+          state.items = [];
+        }
       })
       .addCase(getAllFoods.fulfilled, (state, action) => {
         state.isLoading = false;
@@ -45,7 +49,7 @@ const productSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getFoodById.fulfilled, (state, action) => {
+      .addCase(getFoodById.fulfilled, (state) => {
         state.isLoading = false;
         state.error = null;
       })

@@ -122,7 +122,7 @@ export const getFoods = async ({
       $skip: skip,
     },
     {
-      $limit: limit,
+      $limit: currentLimit,
     },
   ]);
 

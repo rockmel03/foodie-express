@@ -50,6 +50,7 @@ const FoodCard = ({
         <img
           src={food.image.url}
           alt={food.title}
+          loading="lazy"
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {food.discount > 0 && (
